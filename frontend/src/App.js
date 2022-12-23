@@ -1,23 +1,56 @@
-import logo from './logo.svg';
+import Navbar from './components/Navbar/Navbar';
+import Topposts from './components/Posts/Topposts';
+import Profile from './components/Profile/Profile';
+import Hero from './components/Hero/Hero';
+import Signup from './components/Auth/Signup';
+import Login from './components/Auth/Login';
+import SetupAccount from './components/Profile/SetupAccount';
+import { Switch } from 'react-router';
+import { Route } from 'react-router';
 import './App.css';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { authActions } from './store/store';
+import CreatePost from './components/Post/CreatePost';
+import Postpage from './components/Posts/Postpage';
 
 function App() {
+  const authDispatch = useDispatch(authActions)
+  useEffect(()=>{
+    const storedUser = JSON.parse(localStorage.getItem('userData'))
+    if(storedUser && storedUser.token){
+      authDispatch(authActions.login({token: storedUser.token, userId: storedUser.userId}))
+    }
+  }, [])
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Navbar />
+      <Switch>
+        <Route path='/topposts' >
+          <Topposts/>
+        </Route>
+        <Route path='/newpost' >
+          <CreatePost/>
+        </Route>
+        <Route path='/profile/:paramId' >
+          <Profile/>
+        </Route>
+        <Route path='/post/:paramId' >
+          <Postpage/>
+        </Route>
+        <Route path='/signup'>
+          <Signup/>
+        </Route>
+        <Route path='/login'>
+          <Login/>
+        </Route>
+        <Route path='/account-setup'>
+          <SetupAccount/>
+        </Route>
+        <Route path='*' >
+          <Hero />
+        </Route>
+      </Switch>
     </div>
   );
 }

@@ -1,0 +1,138 @@
+.mySlides div {
+  overflow: visible !important;
+  position: static !important;
+}
+.slide-img {
+  position: static !important;
+  max-height: none !important;
+  width: 100% !important;
+  height: auto !important;
+  box-shadow: 0px 2px 5px 0px rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%) !important;
+}
+.slideshow-container {
+  max-width: 1000px;
+  width: 100%;
+  position: relative;
+  margin: auto;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+}
+
+/* Hide the images by default */
+.mySlides {
+  display: none;
+}
+
+/* Next & previous buttons */
+.prev,
+.next {
+  background-color: rgba(0, 0, 0, 0.244);
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  margin-top: -22px;
+  padding: 16px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+}
+.prev {
+  left: 0;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+.prev:hover,
+.next:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+.chosen {
+  display: block;
+}
+.active,
+.dot:hover {
+  background-color: #717171 !important;
+}
+.helper {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
+/* Fading animation */
+.fade {
+  -webkit-animation-name: fade;
+  -webkit-animation-duration: 1.5s;
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+@-webkit-keyframes fade {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.postcard {
+  width: 95%;
+  margin: 1.5em auto;
+  border: 1px solid #d0d0d0;
+  box-shadow: 0px 2px 5px 0px rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%) !important;
+}
+.postcard .title {
+  font-weight: 600;
+}
+.postcard .name,
+.postcard .title {
+  text-align: left;
+  padding-left: 1em;
+}
+.postcard .top-section {
+  padding-top: 0.5em;
+}
+.description{
+    margin: .5em auto;
+}
+.likes-vehicle{
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    margin: auto;
+}
+.likes {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+}
+.comment-input{
+    border: none;
+    font-style: italic;
+    text-align: left;
+    margin-bottom: .5em;
+    width: 100%;
+}
+.text-sections{
+    text-align: left;
+    width: 90%;
+    margin: auto;
+}

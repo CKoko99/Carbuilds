@@ -1,0 +1,8 @@
+.vehicle{
+    font-size: .7em;
+    padding: .5em 1em;
+    border: 1px solid black;
+    border-radius: 15px;
+    background-color: coral;
+    width: fit-content;
+}

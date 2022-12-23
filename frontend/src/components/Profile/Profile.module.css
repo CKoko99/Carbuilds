@@ -1,0 +1,35 @@
+.Profile{
+    width: 90%;
+    margin: auto;
+}
+.username{
+    font-size: 2em;
+    font-weight: bold;
+    margin: .5em;
+}
+.profile-avi-div{
+    margin-bottom: 1em;
+}
+.profile-desc{
+    text-align: center;
+}
+.vehicles-div{
+    text-align: left;
+    margin: 1em;
+}
+.posts-title{
+    font-weight: bold;
+    font-size: 1.5em;
+}
+.vehicles{
+    display: flex;
+}
+
+.add-vehicle{
+    font-size: .7em;
+    padding: .5em 1em;
+    border: 1px solid black;
+    border-radius: 15px;
+    background-color: coral;
+    width: fit-content;
+}
