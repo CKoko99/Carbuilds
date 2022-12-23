@@ -14,6 +14,8 @@ router
     .get(userCTRL.apiGetUsers)
     .post(fileupload.single('image') ,userCTRL.apiCreateUser)
 
+router.route('/users/avatar/:id').post(fileupload.single('image'))
+
 router.route('/users/login').post(userCTRL.apiLoginUser)
 router.route('/user/:id').get(userCTRL.apiGetUserById)
 
@@ -31,6 +33,7 @@ router.use(checkAuth)
 router.route('/post/like/:id').post(postCTRL.apiLikePost)
 router.route('/posts').post(postCTRL.apiCreatePost)
 router.route('/user/update/:id').patch(userCTRL.apiUpdateProfile)
+
 
 
 export default router

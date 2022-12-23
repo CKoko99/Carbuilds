@@ -17,7 +17,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { LinearProgress } from '@material-ui/core';
+import { FormControl, LinearProgress } from '@material-ui/core';
 import Modal from '@mui/material/Modal';
 const theme = createTheme();
 
@@ -43,8 +43,6 @@ export default function SetupAccount() {
     const aboutRef = useRef()
 
 
-
-
     function validateFormHandler() { }
     async function getUserData() {
         try {
@@ -58,6 +56,7 @@ export default function SetupAccount() {
             instagramRef.current.value = responseData.instagram || ""
             twitterRef.current.value = responseData.twitter || ""
             youtubeRef.current.value = responseData.youtube || ""
+
             twitterChangeHandler()
 
         } catch (err) {
@@ -163,7 +162,19 @@ export default function SetupAccount() {
         console.log(two)
         console.log(three)
     }
+    async function submitImageUpload(id, image, validity) {
+        console.log(image)
+        if (validity) {
 
+            try {
+                const imageData = new FormData()
+                imageData.append('image', image)
+
+                const response = await sendRequest('http://localhost:5000/api/v1/carbuilds/users/avatar/' + authSelector.userId, 'POST', imageData)
+            }catch (err) {
+            }
+        }
+    }
     //Vehicle Modal
     const [openVehicleModal, setOpenVehicleModal] = useState(false);
     const handleOpenVehicleModal = () => setOpenVehicleModal(true);
@@ -196,10 +207,12 @@ export default function SetupAccount() {
                                 <button> Upload Image</button>
                             </Grid>
                             <Grid item xs={12}>
+
                                 <Typography variant='h5'>About Me </Typography>
                             </Grid>
 
                             <Grid item xs={12}>
+
                                 <TextField inputRef={aboutRef} id="outlined-multiline-static" label="About Me" multiline rows={4} defaultValue="Default Value" variant="outlined" />
                             </Grid>
                             <Grid item xs={12}>
@@ -224,12 +237,12 @@ export default function SetupAccount() {
                                     <Box sx={style} >
                                         <Grid container spacing={2}>
                                             <Grid item xs={12}>
-                                            <Typography id="modal-modal-title" variant="h6" component="h2">
-                                                Enter New Vehicle Information
-                                            </Typography>
+                                                <Typography id="modal-modal-title" variant="h6" component="h2">
+                                                    Enter New Vehicle Information
+                                                </Typography>
                                             </Grid>
                                             <Grid item xs={12}>
-                                            <VehicleSelect submitVehicle={submitVehicleHandler} />
+                                                <VehicleSelect submitVehicle={submitVehicleHandler} />
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -239,19 +252,20 @@ export default function SetupAccount() {
                                 <Typography variant='h5'>Social Media Links </Typography>
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField inputRef={twitterRef} onChange={twitterChangeHandler} id="outlined-basic" label="Twitter" variant="outlined" />
+                                <TextField inputRef={twitterRef} InputLabelProps={{ shrink: true }} onChange={twitterChangeHandler} id="outlined-basic" label="Twitter" variant="outlined" />
+
                             </Grid>
                             <Grid item xs={12}>
                                 {twitterLink}
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField inputRef={instagramRef} onChange={instagramChangeHandler} id="outlined-basic" label="Instagram" variant="outlined" />
+                                <TextField inputRef={instagramRef} InputLabelProps={{ shrink: true }} onChange={instagramChangeHandler} id="outlined-basic" label="Instagram" variant="outlined" />
                             </Grid>
                             <Grid item xs={12}>
                                 {instagramLink}
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField inputRef={youtubeRef} onChange={youtubeChangeHandler} id="outlined-basic" label="Youtube" variant="outlined" />
+                                <TextField inputRef={youtubeRef} InputLabelProps={{ shrink: true }} onChange={youtubeChangeHandler} id="outlined-basic" label="Youtube" variant="outlined" />
                             </Grid>
                             <Grid item xs={12}>
                                 {youtubeLink}
@@ -269,7 +283,7 @@ export default function SetupAccount() {
             </Container>
         </ThemeProvider>
 
-        <ImageUpload onInput={logdata} />
+        <ImageUpload onInput={submitImageUpload} />
 
     </>)
 }
