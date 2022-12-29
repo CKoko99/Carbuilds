@@ -4,7 +4,7 @@ import { useHttpClient } from "../../../../hooks/http-hook";
 import MenuItem from '@mui/material/MenuItem';
 
 import { Button, TextField } from "@mui/material";
-import { FormControl, Grid } from "@material-ui/core";
+import { CircularProgress, FormControl, Grid, Typography } from "@material-ui/core";
 
 
 const Cars = [];
@@ -50,7 +50,9 @@ export default function VehicleSelect(props) {
   }
   useEffect(() => {
     getVehiclesHandler();
-  }, []);
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
   const [models, setModels] = useState([]);
   const [showMake, setShowMake] = useState(false);
   const [showModel, setShowModel] = useState(false);
@@ -127,6 +129,7 @@ export default function VehicleSelect(props) {
     }
   }
   function submitVehicle() {
+    clearError();
     if (selectedModel === "0") {
       props.submitVehicle({ make: selectedMake, year: selectedYear, model: customModelRef.current.value });
     } else {
@@ -158,6 +161,7 @@ export default function VehicleSelect(props) {
     <>
       <Grid container spacing={2}>
         <Grid item xs={12}>
+          {httpError && ( <Typography> {httpError}</Typography> )}
           <FormControl fullWidth>
             <TextField
               labelId="carPickerYear_label"
@@ -254,6 +258,7 @@ export default function VehicleSelect(props) {
           </Grid>
 
         )}
+        {isLoading && <CircularProgress />}
         {showSubmit && <Grid container justifyContent="center">
           <Button variant="contained" onClick={submitVehicle}>submit</Button> </Grid>}
       </Grid>

@@ -197,7 +197,7 @@ export default function SetupAccount() {
                     <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                         <LockOutlinedIcon />
                     </Avatar>
-                    {httpError && (<div>{httpError}</div>)}
+                    {httpError}
                     <Box component="form" noValidate onSubmit={validateFormHandler} sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -271,7 +271,7 @@ export default function SetupAccount() {
                                 {youtubeLink}
                             </Grid>
                             <Grid item xs={12}>
-                                <Button variant='contained' color='primary' type='submit' onClick={submitProfileHandler}>Submit</Button>
+                                <Button variant='contained' color='primary' type='button' onClick={submitProfileHandler}>Submit</Button>
                             </Grid>
 
                             <Grid item xs={12}>

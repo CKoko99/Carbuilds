@@ -45,7 +45,7 @@ export const useHttpClient = () => {
         console.log("err")
         console.log(err)
         console.log(err.message)
-        if(err.code === 401 && authSelector.isLoggedIn){
+        if(err.code === 401){
           setError(<AuthErrorModal/>);
         }else{
           setError(err.message);
@@ -53,8 +53,7 @@ export const useHttpClient = () => {
         setIsLoading(false);
         throw err;
       }
-    },
-    []
+    }, [authSelector.isLoggedIn]
   );
 
   const clearError = () => {

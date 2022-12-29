@@ -43,6 +43,7 @@ export default function NewVehicleModal(props) {
       }
       useEffect(() => {
         getVehiclesHandler();
+          // eslint-disable-next-line react-hooks/exhaustive-deps
       }, []);
       const [models, setModels] = useState([]);
   const [showMake, setShowMake] = useState(false);
