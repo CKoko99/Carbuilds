@@ -40,7 +40,7 @@ function Hero(props) {
         } else {
             return (
                 <div key={img.title} className={`${classes["mySlides"]} ${classes["fade"]}`}>
-                    <span class="helper"></span>
+                    <span className="helper"></span>
                     <img
                         alt={props.title}
                         src={img.link}

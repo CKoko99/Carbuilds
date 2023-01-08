@@ -112,94 +112,95 @@ function Signup() {
 
     return <>
         <ThemeProvider theme={theme}>
-            <Container component="main" maxWidth="xs">
-                <CssBaseline />
-                <Box
-                    sx={{
-                        marginTop: 8,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}
+
+            <CssBaseline />
+            <Box
+                sx={{
+                    marginTop: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    border: "1px solid black",
+                    margin: "20px auto",
+                    minWidth: "300px",
+                    maxWidth: "500px",
+                    padding: "20px",
+                    borderRadius: "10px",
+                    backgroundColor: "white",
+                    boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
+                    width: "95%"
+                }}
+            >
+                <Typography variant='h3'>
+                    Create An Account
+                </Typography>
+                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                    <LockOutlinedIcon />
+                </Avatar>
+                {httpError && (<div>{httpError}</div>)}
+                <Box component="form" noValidate onSubmit={validateFormHandler} sx={{ mt: 3 }}>
+                    <TextField
+                        required
+                        fullWidth
+                        id="email"
+                        label="Email Address"
+                        name="email"
+                        autoComplete="email"
+                        inputRef={emailRef}
+                        error={emailError ? true : false}
+                        helperText={emailError}
+                        sx={{ mt: 3 }}
+                    />
+                    <TextField
+                        required
+                        fullWidth
+                        id="displayName"
+                        label="Display Name"
+                        name="displayName"
+                        autoComplete="displayName"
+                        inputRef={usernameRef}
+                        error={usernameError ? true : false}
+                        helperText={usernameError}
+                        sx={{ mt: 3 }}
+                    />
+                    <TextField
+                        required
+                        fullWidth
+                        id="password"
+                        label="password"
+                        name="password"
+                        autoComplete="password"
+                        inputRef={passwordRef}
+                        error={passwordError ? true : false}
+                        helperText={passwordError}
+                        type='password'
+                        sx={{ mt: 3 }}
+                    />
+                    <TextField
+                        required
+                        fullWidth
+                        id="confirmPassword"
+                        label="Confirm Password"
+                        name="confirmPassword"
+                        autoComplete="confirmPassword"
+                        inputRef={confirmRef}
+                        error={confirmError ? true : false}
+                        helperText={confirmError}
+                        type='password'
+                        sx={{ mt: 3 }}
+                    />
+                    {isLoading && <LinearProgress />}
+                    <Box sx={{
+                            display: "flex", justifyContent: "space-between", mt: 3, mb: 2, width: "100%"
+                        }} 
                     >
-                    <Typography variant='h3'>
-                        Create An Account
-                    </Typography>
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
-                    </Avatar>
-                    {httpError && (<div>{httpError}</div>)}
-                    <Box component="form" noValidate onSubmit={validateFormHandler} sx={{ mt: 3 }}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    id="email"
-                                    label="Email Address"
-                                    name="email"
-                                    autoComplete="email"
-                                    inputRef={emailRef}
-                                    error={emailError ? true : false}
-                                    helperText={emailError}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    id="displayName"
-                                    label="Display Name"
-                                    name="displayName"
-                                    autoComplete="displayName"
-                                    inputRef={usernameRef}
-                                    error={usernameError ? true : false}
-                                    helperText={usernameError}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    id="password"
-                                    label="password"
-                                    name="password"
-                                    autoComplete="password"
-                                    inputRef={passwordRef}
-                                    error={passwordError ? true : false}
-                                    helperText={passwordError}
-                                    type='password'
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    id="confirmPassword"
-                                    label="Confirm Password"
-                                    name="confirmPassword"
-                                    autoComplete="confirmPassword"
-                                    inputRef={confirmRef}
-                                    error={confirmError ? true : false}
-                                    helperText={confirmError}
-                                    type='password'
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                {isLoading && <LinearProgress />}
-                            </Grid>
-                            <Grid container justify="space-between">
-                                <Grid item xs={6}>
-                                    <Button variant='outlined' color='secondary' type='button' onClick={redirectLogin}>Returning User?</Button>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Button variant='contained' color='primary' type='submit' onClick={validateFormHandler}>Create An Account!</Button>
-                                </Grid>
-                            </Grid>
-                        </Grid>
+                        <Button variant='outlined' color='secondary' type='button' onClick={redirectLogin}>Returning User?</Button>
+                        <Button variant='contained' color='primary' type='submit' onClick={validateFormHandler}>Create An Account!</Button>
                     </Box>
+
                 </Box>
-            </Container>
+            </Box>
+
         </ThemeProvider>
     </>
 }
