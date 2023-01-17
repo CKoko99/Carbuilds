@@ -25,7 +25,11 @@ const theme = createTheme({
       contrastText: '#000',
     }
   },
+  typography: {
+    h6: { fontSize: '1rem' },
+  }
 });
+
 function App() {
   const authDispatch = useDispatch(authActions)
   useEffect(() => {

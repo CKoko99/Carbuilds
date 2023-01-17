@@ -1,5 +1,5 @@
 import classes from "./Profile.module.css";
-import {Modal, Typography, Box, Button} from '@material-ui/core'
+import { Modal, Typography, Box, Button } from '@material-ui/core'
 import Profilecard from "../Posts/ProfileCard";
 import Vehicle from "../Ui/vehicle/vehicle";
 import EditProfile from "../Ui/Modals/EditProfile";
@@ -17,6 +17,9 @@ import youtubeIcon from '../../icons/socials/youtube.png'
 import { useParams } from "react-router-dom";
 import LinkModal from "../Ui/Modals/LinkModal";
 import NewVehicleModal from "../Ui/Modals/NewVehicleModal";
+import { Avatar } from "@mui/material";
+import { height, width } from "@mui/system";
+
 
 const User = {
     username: "Kokokrispy",
@@ -60,6 +63,11 @@ const User = {
         },
     ]
 }
+
+
+
+
+
 function Profile() {
     const { paramId } = useParams();
     const [profileData, setProfileData] = useState()
@@ -222,7 +230,62 @@ function Profile() {
     }
 
     return <>
-        {profileData ? (
+        {profileData ? (<>
+            <Box sx={{
+                marginTop: 15,
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                borderLeft: "1px solid #676767",
+                borderRight: "1px solid #676767",
+                margin: "20px auto",
+                minWidth: "300px",
+                maxWidth: "1035px",
+                padding: "2.5% 3.5% 2.5% 3.5%",
+                backgroundColor: "white",
+                boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
+                width: "85%",
+                display: { xs: "block", sm: "flex" },
+            }}>
+
+                <Box sx={{ width: { xs: '90%', sm: '25%' }, margin: { xs: "auto", sm: 0} }}>
+                    <Typography variant="h4" component="h1" gutterBottom> {profileData.username} </Typography>
+                    <Avatar alt="avatar" src={User.avatar} className={classes.large} sx={{ width: "100%", height: "100%" }} />
+                </Box>
+                <Box sx={{ width: { xs: '90%', sm: '50%' }, margin: "10px auto"}}>
+                    <Box sx={{ display: "flex", width: "100%", justifyContent: "space-between" }}>
+                        <Box sx={{ display: { xs: "block", sm: "flex" }, fontSize: "1rem" }}>
+                            <Box sx={{ marginRight: "4px" }}>
+                                <Typography variant="h6" sx={{fontSize: "1rem",}}> 3 </Typography>
+                            </Box>
+                            <Typography variant="h6" sx={{fontSize: "1rem",}}>Posts </Typography>
+                        </Box>
+                        <Box sx={{ display: { xs: "block", sm: "flex" } }}>
+                            <Box sx={{ marginRight: "4px" }}>
+                                <Typography variant="h6" sx={{fontSize: "1rem",}}> 3 </Typography>
+                            </Box>
+                            <Typography variant="h6" sx={{fontSize: "1rem",}}> Followers </Typography>
+                        </Box>
+                        <Box sx={{ display: { xs: "block", sm: "flex" } }}>
+                            <Box sx={{ marginRight: "4px" }}>
+                                <Typography variant="h6" sx={{fontSize: "1rem",}}> 3 </Typography>
+                            </Box>
+                            <Typography variant="h6" sx={{fontSize: "1rem",}}> Following </Typography>
+                        </Box>
+                    </Box>
+                    <Box sx={{textAlign: {xs: "center", sm: "left"}, mt: 1, mb: 1,}}>
+                        <Button variant="contained" onClick={openEditProfileHandler}>Edit Profile</Button>
+                    </Box>
+                    <Box sx={{textAlign: {xs: "center", sm: "left"}, mt: 1, mb: 1,}}>
+                        <Typography > {profileData.about} </Typography>
+                    </Box>
+                    <Box sx={{textAlign: {xs: "center", sm: "left"}, mt: 1, mb: 1,}}>
+                        {profileData.twitter && profileData.twitter.length > 0 && (<a target="_blank" href={"https://twitter.com/" + profileData.twitter}><img src={twitterIcon}/> </a>)}
+                        {profileData.instagram && profileData.instagram.length > 0 && (<a target="_blank" href={"https://instagram.com/" + profileData.instagram}><img src={instagramIcon}/> </a>)}
+                        {profileData.youtube && profileData.youtube.length > 0 && (<a target="_blank" href={"https://youtube.com/" + profileData.youtube}><img src={youtubeIcon}/> </a>)}
+                    </Box>
+                </Box>
+            </Box>
+            END
             <div className={classes['Profile']}>
                 <div className={classes['username']}>{profileData.username}</div>
                 {currentUser && ("true")}
@@ -288,7 +351,7 @@ function Profile() {
                             <Button onClick={openNewVehicleModalHandle}>Add New Vehicle</Button>
                         </>)
                         }
-                        {vehicleModal &&(<>
+                        {vehicleModal && (<>
                             <Modal
                                 open={vehicleModal}
                                 onClose={closeNewVehicleModalHandle}
@@ -315,7 +378,7 @@ function Profile() {
                 </div>
                 <div className={classes['']}></div>
             </div>
-        ) :
+        </>) :
             (<div>User Not Found</div>)
         }
     </>
