@@ -21,7 +21,7 @@ export default function Postpage(props) {
     const commentRef = useRef()
     async function likePostHandler() {
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/post/like/' + paramId, 'POST', JSON.stringify({
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/post/like/' + paramId, 'POST', JSON.stringify({
                 userId: authSelector.userId
             }), {
                 'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ export default function Postpage(props) {
     }
     async function getPostData() {
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/posts/' + paramId, 'GET', null, {
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/posts/' + paramId, 'GET', null, {
                 'Content-Type': 'application/json'
             })
             if (!responseData.error) {
@@ -65,7 +65,7 @@ export default function Postpage(props) {
     }
     async function getUserData(userId, state) {
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/user/' + userId, 'GET', null, {
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/user/' + userId, 'GET', null, {
                 'Content-Type': 'application/json'
             })
             if (!responseData.error) {
@@ -81,7 +81,7 @@ export default function Postpage(props) {
     }
     async function getCommentsHandler(commentId) {
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/comment/' + commentId, 'GET', null, {
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/comment/' + commentId, 'GET', null, {
                 'Content-Type': 'application/json'
             })
             return responseData
@@ -128,7 +128,7 @@ export default function Postpage(props) {
             console.log("eh1")
             try {
                 console.log("eh2")
-                const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/comment/' + props.postid, 'POST', JSON.stringify({
+                const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/comment/' + props.postid, 'POST', JSON.stringify({
                     userId: authSelector.userId,
                     text: commentRef.current.value,
                 }), {

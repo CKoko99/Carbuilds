@@ -56,7 +56,7 @@ export default function EditProfile(props) {
     },[])
     async function submitProfileHandler(){
         try {
-            const response = await sendRequest('http://localhost:5000/api/v1/carbuilds/user/update/'+ authSelector.userId, 'PATCH',JSON.stringify({
+            const response = await sendRequest('http://localhost:5001/api/v1/carbuilds/user/update/'+ authSelector.userId, 'PATCH',JSON.stringify({
                 about: aboutRef.current.value,
                 twitter: twitterRef.current.value,
                 instagram: instagramRef.current.value,

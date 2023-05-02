@@ -16,7 +16,7 @@ function Profilecard(props) {
     const authSelector = useSelector(state => state.auth)
     async function likePostHandler() {
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/post/like/' + props.postid, 'POST', JSON.stringify({
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/post/like/' + props.postid, 'POST', JSON.stringify({
                 userId: authSelector.userId
             }), {
                 'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ function Profilecard(props) {
             console.log("eh1")
             try {
                 console.log("eh2")
-                const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/comment/' + props.postid, 'POST', JSON.stringify({
+                const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/comment/' + props.postid, 'POST', JSON.stringify({
                     userId: authSelector.userId,
                     text: commentRef.current.value,
                 }), {

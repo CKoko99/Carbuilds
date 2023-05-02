@@ -16,7 +16,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { LinearProgress } from '@material-ui/core';
+import { LinearProgress, Modal } from '@material-ui/core';
 
 
 const theme = createTheme();
@@ -29,6 +29,8 @@ function Login() {
     const [usernameError, setUsernameError] = useState(null)
     const [passwordError, setPasswordError] = useState(null)
 
+    const [loginError, setLoginError] = useState(false)
+    const [loginErrorMessage, setLoginErrorMessage] = useState("")
     const usernameRef = useRef()
     const passwordRef = useRef()
     function redirectSignup() {
@@ -65,7 +67,7 @@ function Login() {
     async function submitSignUpHandler(username, password, event) {
         const formattedusername = username.toLowerCase()
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/users/login', 'POST', JSON.stringify({
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/users/login', 'POST', JSON.stringify({
                 username: formattedusername,
                 password
             }), {
@@ -76,6 +78,8 @@ function Login() {
             history.replace('/')
 
         } catch (err) {
+            console.log(err)
+
         }
     }
 
@@ -143,7 +147,6 @@ function Login() {
                         </Box>
                     </Box>
                 </Box>
-
         </ThemeProvider>
     </>
 }

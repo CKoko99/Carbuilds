@@ -86,7 +86,7 @@ function Profile() {
     async function getUserData() {
         let responseData
         try {
-            responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/user/' + paramId, "GET", null, {
+            responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/user/' + paramId, "GET", null, {
                 'Content-Type': 'application/json'
             })
             if (responseData.error) {
@@ -100,7 +100,7 @@ function Profile() {
     }
     async function getVehiclesHandler() {
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/vehicles/' + paramId, 'GET', null, {
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/vehicles/' + paramId, 'GET', null, {
                 'Content-Type': 'application/json'
             })
             if (!responseData.error) {
@@ -112,7 +112,7 @@ function Profile() {
     }
     async function getPostsHandler() {
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/posts/user/' + paramId, 'GET', null, {
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/posts/user/' + paramId, 'GET', null, {
                 'Content-Type': 'application/json'
             })
             if (!responseData.error) {
@@ -123,7 +123,7 @@ function Profile() {
     }
     async function getCommentsHandler(postId) {
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/comments/' + postId, 'GET', null, {
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/comments/' + postId, 'GET', null, {
                 'Content-Type': 'application/json'
             })
             return responseData
@@ -133,7 +133,7 @@ function Profile() {
     }
     async function getUserByIdHandler(userId) {
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/user/' + userId, 'GET', null, {
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/user/' + userId, 'GET', null, {
                 'Content-Type': 'application/json'
             })
             return responseData
@@ -185,7 +185,7 @@ function Profile() {
     })
     async function submitVehicleHandler(vehicleobject) {
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/vehicles', 'POST', JSON.stringify({
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/vehicles', 'POST', JSON.stringify({
                 userId: authSelector.userId,
                 model: vehicleobject.model,
                 year: vehicleobject.year,

@@ -94,7 +94,7 @@ function Signup() {
     }
     async function submitSignUpHandler(email, username, password) {
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/users', 'POST', JSON.stringify({
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/users', 'POST', JSON.stringify({
                 username,
                 email,
                 password
