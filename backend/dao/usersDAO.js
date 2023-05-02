@@ -67,23 +67,16 @@ export default class UsersDAO {
         }
     }
     static async getUsers() {
-        let userslist
+        console.log("start")
+        let usersList
         let cursor
         try {
-            cursor = await User
-                .find()
-        } catch (e) {
-            console.error(`Unable to issue find command, ${e}`)
-            return { usersList: [], totalUsers: 0 }
-        }
-
-        try {
-            const usersList = cursor.map(user => user.toObject())
+            
+            cursor = await User.find()
+            usersList = cursor.map(user => user.toObject())
             return { usersList, totalUsers: usersList.length }
         } catch (e) {
-            console.error(
-                `Unable to convert cursor to array or problem counting documents, ${e}`,
-            )
+            console.error(`Error: ${e}`)
             return { usersList: [], totalUsers: 0 }
         }
     }
