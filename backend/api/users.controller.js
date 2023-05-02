@@ -21,10 +21,14 @@ export default class UsersController {
         }
     }
     static async apiGetUsers(req, res, next) {
-        const { usersList, totalUsers } = await UsersDAO.getUsers()
-
-        let response = {usersList, totalUsers}
+        try {
+            const { usersList, totalUsers } = await UsersDAO.getUsers()
+            let response = { usersList, totalUsers }
             res.json(response)
+        } catch (error) {
+            console.error(`Error while getting users: ${error}`)
+            res.status(500).json({ error: "Internal Server Error" })
+        }
     }
     static async apiLoginUser(req, res, next) {
         const username = req.body.username

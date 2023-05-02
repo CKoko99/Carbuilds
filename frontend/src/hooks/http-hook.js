@@ -19,6 +19,7 @@ export const useHttpClient = () => {
   const sendRequest = useCallback(
     async (url, method = 'GET', body = null, headers = {}) => {
       setIsLoading(true);
+      setError(null);
       const httpAbortCtrl = new AbortController();
       activeHttpRequests.current.push(httpAbortCtrl);
 
@@ -44,6 +45,7 @@ export const useHttpClient = () => {
       } catch (err) {
         console.log("err")
         console.log(err)
+        console.log(err.code)
         console.log(err.message)
         if(err.code === 401){
           setError(<AuthErrorModal/>);

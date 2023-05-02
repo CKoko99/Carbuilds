@@ -95,7 +95,7 @@ function Navbar() {
     }
     async function getUserData() {
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/user/' + authSelector.userId, "GET", null, {
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/user/' + authSelector.userId, "GET", null, {
                 'Content-Type': 'application/json'
             })
         } catch (err) {

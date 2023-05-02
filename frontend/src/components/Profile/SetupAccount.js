@@ -46,7 +46,7 @@ export default function SetupAccount() {
     function validateFormHandler() { }
     async function getUserData() {
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/user/' + authSelector.userId, 'GET', null, {
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/user/' + authSelector.userId, 'GET', null, {
                 'Content-Type': 'application/json'
             })
 
@@ -68,7 +68,7 @@ export default function SetupAccount() {
 
     async function getVehiclesHandler() {
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/vehicles/' + authSelector.userId, 'GET', null, {
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/vehicles/' + authSelector.userId, 'GET', null, {
                 'Content-Type': 'application/json'
             })
 
@@ -92,7 +92,7 @@ export default function SetupAccount() {
     async function submitVehicleHandler(vehicleobject) {
         console.log(vehicleobject)
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/vehicles', 'POST', JSON.stringify({
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/vehicles', 'POST', JSON.stringify({
                 userId: authSelector.userId,
                 model: vehicleobject.model,
                 year: vehicleobject.year,
@@ -144,7 +144,7 @@ export default function SetupAccount() {
     }
     async function submitProfileHandler() {
         try {
-            const response = await sendRequest('http://localhost:5000/api/v1/carbuilds/user/update/' + authSelector.userId, 'PATCH', JSON.stringify({
+            const response = await sendRequest('http://localhost:5001/api/v1/carbuilds/user/update/' + authSelector.userId, 'PATCH', JSON.stringify({
                 about: aboutRef.current.value,
                 twitter: twitterRef.current.value,
                 instagram: instagramRef.current.value,
@@ -170,7 +170,7 @@ export default function SetupAccount() {
                 const imageData = new FormData()
                 imageData.append('image', image)
 
-                const response = await sendRequest('http://localhost:5000/api/v1/carbuilds/users/avatar/' + authSelector.userId, 'POST', imageData)
+                const response = await sendRequest('http://localhost:5001/api/v1/carbuilds/users/avatar/' + authSelector.userId, 'POST', imageData)
             }catch (err) {
             }
         }

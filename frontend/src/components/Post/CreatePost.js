@@ -14,7 +14,7 @@ function CreatePost() {
 
     async function getVehiclesHandler(){
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/vehicles/'+ authSelector.userId, 'GET',null, {
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/vehicles/'+ authSelector.userId, 'GET',null, {
                 'Content-Type': 'application/json'
             })
     
@@ -37,7 +37,7 @@ function CreatePost() {
     async function submitPostHandler(){
         console.log("here")
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/posts/', 'POST',JSON.stringify({
+            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/posts/', 'POST',JSON.stringify({
                 userId: authSelector.userId,
                 title: titleRef.current.value,
                 vehicle: vehicleRef.current.value,
