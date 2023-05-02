@@ -158,4 +158,58 @@ export default class UsersDAO {
         }
         return { message: "success" }
     }
+
+    static async followUser(userId, followUserId) {
+        const user = await this.getUser(userId);
+        if (!user) {
+          throw new Error('User not found');
+        }
+    
+        const followUser = await this.getUser(followUserId);
+        if (!followUser) {
+          throw new Error('User to follow not found');
+        }
+    
+        if (user.following.includes(followUserId)) {
+          throw new Error('User already followed');
+        }
+    
+        user.following.push(followUserId);
+        followUser.followers.push(userId);
+    
+        await user.save();
+        await followUser.save();
+    
+        return {
+          following: user.following,
+          followers: followUser.followers,
+        };
+      }
+    
+      static async unfollowUser(userId, unfollowUserId) {
+        const user = await this.getUser(userId);
+        if (!user) {
+          throw new Error('User not found');
+        }
+    
+        const unfollowUser = await this.getUser(unfollowUserId);
+        if (!unfollowUser) {
+          throw new Error('User to unfollow not found');
+        }
+    
+        if (!user.following.includes(unfollowUserId)) {
+          throw new Error('User not followed');
+        }
+    
+        user.following = user.following.filter((id) => id !== unfollowUserId);
+        unfollowUser.followers = unfollowUser.followers.filter((id) => id !== userId);
+    
+        await user.save();
+        await unfollowUser.save();
+    
+        return {
+          following: user.following,
+          followers: unfollowUser.followers,
+        };
+      }
 }

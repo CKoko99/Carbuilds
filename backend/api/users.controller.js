@@ -11,9 +11,9 @@ export default class UsersController {
                 email, username, password, next
             )
             console.log(UserResponse)
-            if(UserResponse.error){
+            if (UserResponse.error) {
                 res.status(UserResponse.error.code).json(UserResponse.error)
-            }else{
+            } else {
                 res.json(UserResponse)
             }
         } catch (e) {
@@ -33,12 +33,12 @@ export default class UsersController {
     static async apiLoginUser(req, res, next) {
         const username = req.body.username
         const password = req.body.password
-        const userData  = await UsersDAO.loginUser(username, password)
-            if(userData.error){
-                res.status(userData.error.code).json(userData.error)
-            }else{
-                res.json(userData)
-            }
+        const userData = await UsersDAO.loginUser(username, password)
+        if (userData.error) {
+            res.status(userData.error.code).json(userData.error)
+        } else {
+            res.json(userData)
+        }
     }
 
     static async apiGetUserById(req, res, next) {
@@ -46,8 +46,33 @@ export default class UsersController {
         res.json(userData)
     }
     static async apiUpdateProfile(req, res, next) {
-        const {about, twitter, instagram, youtube} = req.body
+        const { about, twitter, instagram, youtube } = req.body
         const userData = await UsersDAO.updateProfile(req.params.id, about, twitter, instagram, youtube)
         res.json(userData)
+    }
+    static async apiFollowUser(req, res, next) {
+        try {
+            const { id: userId } = req.params;
+            const { followUserId } = req.body;
+
+            const result = await UsersDAO.followUser(userId, followUserId);
+
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async apiUnfollowUser(req, res, next) {
+        try {
+            const { id: userId } = req.params;
+            const { unfollowUserId } = req.body;
+
+            const result = await UsersDAO.unfollowUser(userId, unfollowUserId);
+
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
     }
 }
