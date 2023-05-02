@@ -37,6 +37,19 @@ const UsersSchema = new Schema({
     youtube: {
         type: String,
     },
+    followers: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: 'User'
+        }
+    ],
+    following: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: 'User'
+        }
+    ]
+    ,
 })
 
 export default mongoose.model('User', UsersSchema)

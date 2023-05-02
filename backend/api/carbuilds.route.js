@@ -33,6 +33,7 @@ router.use(checkAuth)
 router.route('/post/like/:id').post(postCTRL.apiLikePost)
 router.route('/posts').post(postCTRL.apiCreatePost)
 router.route('/user/update/:id').patch(userCTRL.apiUpdateProfile)
+router.route('/user/:id/follow').post(userCTRL.apiFollowUser).delete(userCTRL.apiUnfollowUser)
 
 
 
