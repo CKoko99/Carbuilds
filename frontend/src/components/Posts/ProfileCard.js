@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import classes from "./Posts.module.css";
 
 import Vehicle from "../Ui/vehicle/vehicle";
@@ -9,98 +9,132 @@ import emptyheart from '../../icons/Ui/unfilledheart.png'
 
 import { useSelector } from "react-redux";
 import { useHttpClient } from "../../hooks/http-hook";
+import { Box, Typography, TextField, Button, Link } from "@material-ui/core";
+import Image from 'mui-image'
+import SwipeableViews from 'react-swipeable-views';
+import { MobileStepper } from "@mui/material";
+import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
+
+
 function Profilecard(props) {
-    const [currentSlide, setCurrentSlide] = useState(1);
+
     const { isLoading, httpError, sendRequest, clearError } = useHttpClient()
     const commentRef = useRef()
     const authSelector = useSelector(state => state.auth)
-    async function likePostHandler() {
+    const [postData, setPostData] = useState({
+        title: "",
+        description: "",
+        likes: [],
+        comments: [],
+        imgs: [],
+        vehicle: "",
+        creator: {username: "", userId: ""},
+    })
+    //useEffect to get the post data
+    useEffect(() => {
+        retrievePostData()
+    }, [])
+    async function retrievePostData() {
         try {
-            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/post/like/' + props.postid, 'POST', JSON.stringify({
-                userId: authSelector.userId
-            }), {
-                'Content-Type': 'application/json',
-                Authorization: "Bearer "+ authSelector.token
-            })
+            const responseData = await sendRequest('http://localhost:5000/api/v1/carbuilds/posts/' + props.postid)
+            console.log("HEra")
+            //add test image to response data
+
+            responseData.imgs = ["https://i.imgur.com/v7yPDWf.jpg"]
+
+
+            //retrieve user name from id in response data
+            const userResponse = await sendRequest('http://localhost:5000/api/v1/carbuilds/user/' + responseData.creator)
+            responseData.creator = {username: userResponse.username, userId: responseData.creator}
+
             console.log(responseData)
-            props.reload()
+            setPostData(responseData)
         } catch (e) {
             console.log(e)
         }
     }
-    let isLiked
-    let heartimg
-    let userliked = props.likes.find(user => user === authSelector.userId)
-    if (userliked) {
-        isLiked = true
-        heartimg = <img style={{ paddingRight: ".5em" }} alt="heart" src={heart} onClick={likePostHandler} />
-    } else {
-        isLiked = false
-        heartimg = <img alt="heart" style={{ paddingRight: ".5em" }} src={emptyheart} onClick={likePostHandler} />
-    }
-    let counter = 0
-    let slides
-    let comments
-    if(props.comments){
-        comments = props.comments.comments.map(comment => {
-            return <div key={comment.id} className={classes['comment']}><a href={"/profile/"+comment.userId}><span style={{ fontWeight: "bold" }}> {comment.username}-</span></a> {comment.text}</div>
-        })
-    }
-    if (props.imgs.length > 1) {
-        slides = props.imgs.map((img) => {
-            counter++;
-            if (counter === currentSlide) {
-                return (
-                    <div
-                        key={img}
-                        className={`${classes["mySlides"]} ${classes["chosen"]} ${classes["fade"]}`}
-                    >
-                        <span className={classes["helper"]}></span>
-                        <img
-                            src={img}
-                            alt={img}
-                            className={classes["slide-img"]}
-                        />
-                    </div>
-                );
-            } else {
-                return (
-                    <div key={img} className={`${classes["mySlides"]} ${classes["fade"]}`}>
-                        <span className={classes["helper"]}></span>
-                        <img
-                            alt={props.title}
-                            src={img.link}
-                            className={classes["slide-img"]}
-                        />
-                    </div>
-                );
-            }
-        });
-    } else {
-        slides = <div
-            key={props.imgs[0].title}
-            className={`${classes["mySlides"]} ${classes["chosen"]} ${classes["fade"]}`}
-        >
-            <span className={classes["helper"]}></span>
-            <img
-                src={props.imgs[0]}
-                alt={props.imgs[0].title}
-                className={classes["slide-img"]}
-            />
-        </div>
-    }
-    function changeSlideHandler(n) {
-        const newSlide = currentSlide + n;
-        if (newSlide < 1) {
-            setCurrentSlide(props.imgs.length);
-        } else if (newSlide > props.imgs.length) {
-            setCurrentSlide(1);
-        } else {
-            setCurrentSlide(newSlide);
+
+    async function likePostHandler() {
+
+        try {
+            await sendRequest('http://localhost:5000/api/v1/carbuilds/post/like/' + props.postid, 'POST', JSON.stringify({
+                userId: authSelector.userId
+            }), {
+                'Content-Type': 'application/json',
+                Authorization: "Bearer " + authSelector.token
+            })
+            
+            const getResponse = await sendRequest('http://localhost:5000/api/v1/carbuilds/posts/' + props.postid)
+
+            let newPostData = postData
+            newPostData.likes = getResponse.likes
+            setPostData(newPostData)
+            console.log("this is what we're passing to handle likes")
+            console.log(newPostData.likes)
+            handleLikes(newPostData.likes)
+        } catch (e) {
+            console.log(e)
         }
     }
-    async function submitCommentHandler(){
-        if(commentRef.current.value.length > 0){
+
+    const [isLiked, setIsLiked] = useState(false)
+    const [likesText, setLikesText] = useState("Be the first to like this!")
+
+
+    function handleLikes(likesArray){
+        //check if user liked
+        console.log(likesArray)
+        if (likesArray.find(user => user === authSelector.userId)) {
+            setIsLiked(true)
+            console.log("liked")
+        } else {
+            setIsLiked(false)
+            console.log("not liked")
+        }
+        //set likes text
+        if(likesArray.length > 1) {
+            setLikesText(likesArray.length + " likes")
+        }
+        else if (likesArray.length == 1) {
+            setLikesText(likesArray.length + " like")
+        }else{
+            setLikesText("Be the first to like this!")
+        }
+    }
+
+    useEffect(() => {
+        handleLikes(postData.likes)
+    }, [postData.likes])
+   
+
+    let comments
+    if (postData.comments.comments) {
+        comments = postData.comments.comments.map((comment, index) => {
+            return <div key={index} className={classes['comment']}><a href={"/profile/" + comment.userId}><span style={{ fontWeight: "bold" }}> {comment.username}-</span></a> {comment.text}</div>
+        })
+    }
+    /*if (postData.imgs.length == 1) {
+        //props.imgs.push("https://i.imgur.com/v7yPDWf.jpg")
+    }*/
+    
+    const [activeStep, setActiveStep] = useState(0);
+    const maxSteps = postData.imgs.length;
+
+    const handleNext = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    };
+
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    };
+
+    const handleStepChange = (step) => {
+        setActiveStep(step);
+    };
+
+    async function submitCommentHandler() {
+        console.log(commentRef.current.value)
+        if (commentRef.current.value.length > 0) {
             console.log("eh1")
             try {
                 console.log("eh2")
@@ -119,45 +153,116 @@ function Profilecard(props) {
             props.reload()
         }
     }
-    return (
-        <div className={classes['postcard']}>
-            <div className={classes['top-section']}>
-                <div className={classes['title']}><a href={"/post/"+props.postid}>
-                    {props.title}
-                    </a>
-                    </div>
-            </div>
-            <div className={classes['slideshow-container']}>{slides}
 
-                {props.imgs.length > 1 && (<><div
-                    className={classes.prev}
-                    onClick={() => {
-                        changeSlideHandler(-1);
-                    }}
+    return (<>
+        <Box sx={{
+            textAlign: "left",
+            border: "1px solid #676767",
+            boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
+        }}>
+            <Box sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "95%",
+                margin: "0.5em auto"
+            }}>
+                <Link href={"/post/" + props.postid}>
+                    {postData.title}
+                </Link>
+            </Box>
+            <Box>
+
+                <SwipeableViews
+                    axis={'x'}
+                    index={activeStep}
+                    onChangeIndex={handleStepChange}
+                    enableMouseEvents
+                    containerStyle={{ alignItems: "center" }}
                 >
-                    &#10094;
-                </div>
-                    <div
-                        className={classes.next}
-                        onClick={() => {
-                            changeSlideHandler(1);
-                        }}
-                    >&#10095;</div></>)}
-            </div>
-            <div className={classes['likes-vehicle']}>
-                <div className={classes['likes']}>{heartimg}{(props.likes.length > 1) ? (props.likes.length + " likes") : (props.likes.length > 0) ? (props.likes.length + " like") : "Be The First To Like"}</div>
-                {props.vehicle && (<div className={classes['vehicle']}><Vehicle year={props.vehicle.year} model={props.vehicle.model} make={props.vehicle.make} /></div>)}
-            </div>
-            <div className={classes['text-sections']}>
-                <div className={classes['description']}><span style={{ fontWeight: "bold" }}> {props.username}-</span> {props.description}</div>
-                {comments}
-                <div className={classes['comment']}>
-                    <input className={classes['comment-input']} ref={commentRef} placeholder="Leave A Comment..." />
-                    <button onClick={submitCommentHandler}>post comment</button>
-                </div>
-            </div>
+                    {postData.imgs.map((step, index) => (
+                        <div key={step}>
+                            {Math.abs(activeStep - index) <= 2 ? (
+                                <Box
+                                    component="img"
+                                    sx={{
+                                        display: 'block',
+                                        overflow: 'hidden',
+                                        width: '100%',
+                                    }}
+                                    src={step}
+                                />
+                            ) : null}
+                        </div>
+                    ))}
+                </SwipeableViews>
 
-        </div>
+                {postData.imgs.length > 1 &&
+                <MobileStepper
+                    steps={maxSteps}
+                    position="static"
+                    activeStep={activeStep}
+                    nextButton={
+                        <Button
+                            size="small"
+                            onClick={handleNext}
+                            disabled={activeStep === maxSteps - 1}
+                            style={{ visibility: activeStep === maxSteps -1 ? "hidden" : "visible"}}
+                        >
+                            
+                            {<KeyboardArrowRight />}
+                        </Button>
+                    }
+                    backButton={
+                        <Button size="small" onClick={handleBack} disabled={activeStep === 0} 
+                        style={{
+                            visibility: activeStep === 0 ? "hidden" : "visible"
+                        }} >
+
+                            {<KeyboardArrowLeft />}
+
+                            
+                        </Button>
+                    }
+                />}
+            </Box>
+
+            <Box sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "95%",
+                margin: "0.5em auto 0"
+            }}>
+                <Box sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "row"
+                }}>
+                    {isLiked ? 
+                    <Image onClick={likePostHandler} src={heart} alt="heart" width={"1.2em"} /> :
+                    <Image onClick={likePostHandler} src={emptyheart} alt="heart" width={"1.2em"} />
+                 } <Typography style={{ marginLeft: "0.5em" }} variant="subtitle1" component="span">{likesText}</Typography>
+                    
+                </Box>
+                {postData.vehicle && (<div className={classes['vehicle']}><Vehicle year={postData.vehicle.year} model={postData.vehicle.model} make={postData.vehicle.make} /></div>)}
+            </Box>
+            <Box sx={{
+                display: "flex",
+                flexDirection: "column",
+                width: "95%",
+                margin: "0.5em auto"
+            }}>
+                <Typography variant="subtitle1" ><Box component="span" fontWeight='fontWeightBold'>{postData.creator.username} - </Box> {postData.description}</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: "0.5em" }}>
+                    <TextField id="standard-basic" label="Leave a comment..." variant="standard" inputRef={commentRef} />
+                    <Button variant="contained" onClick={submitCommentHandler}>Post</Button>
+                </Box>
+            </Box>
+        </Box>
+       </>
     )
 }
 

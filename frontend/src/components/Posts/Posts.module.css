@@ -14,7 +14,7 @@
   width: 100%;
   position: relative;
   margin: auto;
-  min-height: 300px;
+  min-height: 200px;
   display: flex;
   align-items: center;
 }
