@@ -11,7 +11,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHttpClient } from "../../hooks/http-hook";
 import { authActions } from "../../store/store";
 
-import twitterIcon from '../../icons/socials/twitter.png'
+import TwitterIcon from '@mui/icons-material/Twitter';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import YouTubeIcon from '@mui/icons-material/YouTube';
 import instagramIcon from '../../icons/socials/instagram.png'
 import youtubeIcon from '../../icons/socials/youtube.png'
 import { useParams } from "react-router-dom";
@@ -19,7 +21,7 @@ import LinkModal from "../Ui/Modals/LinkModal";
 import NewVehicleModal from "../Ui/Modals/NewVehicleModal";
 import { Avatar } from "@mui/material";
 import { height, width } from "@mui/system";
-
+import { makeStyles } from '@material-ui/core/styles';
 
 const User = {
     username: "Kokokrispy",
@@ -65,10 +67,16 @@ const User = {
 }
 
 
-
+const useStyles = makeStyles({
+    socialIcons: {
+      color: 'black',
+      fontSize: "2.5rem",
+    },
+  });
 
 
 function Profile() {
+    const classes = useStyles();
     const { paramId } = useParams();
     const [profileData, setProfileData] = useState()
     const [usersVehicles, setUsersVehicles] = useState([])
@@ -279,9 +287,9 @@ function Profile() {
                         <Typography > {profileData.about} </Typography>
                     </Box>
                     <Box sx={{textAlign: {xs: "center", sm: "left"}, mt: 1, mb: 1,}}>
-                        {profileData.twitter && profileData.twitter.length > 0 && (<a target="_blank" href={"https://twitter.com/" + profileData.twitter}><img src={twitterIcon}/> </a>)}
-                        {profileData.instagram && profileData.instagram.length > 0 && (<a target="_blank" href={"https://instagram.com/" + profileData.instagram}><img src={instagramIcon}/> </a>)}
-                        {profileData.youtube && profileData.youtube.length > 0 && (<a target="_blank" href={"https://youtube.com/" + profileData.youtube}><img src={youtubeIcon}/> </a>)}
+                        {profileData.twitter && profileData.twitter.length > 0 && (<a target="_blank" style={{textDecoration: "none"}} href={"https://twitter.com/" + profileData.twitter}><TwitterIcon className={classes.socialIcons} /> </a>)}
+                        {profileData.instagram && profileData.instagram.length > 0 && (<a target="_blank" style={{textDecoration: "none"}} href={"https://instagram.com/" + profileData.instagram}><InstagramIcon className={classes.socialIcons} /> </a>)}
+                        {profileData.youtube && profileData.youtube.length > 0 && (<a target="_blank" style={{textDecoration: "none"}} href={"https://youtube.com/" + profileData.youtube}><YouTubeIcon className={classes.socialIcons} /></a>)}
                     </Box>
                 </Box>
             </Box>
@@ -301,7 +309,7 @@ function Profile() {
                     if (currentUser) {
                         return <>
                             {profileData.twitter && profileData.twitter.length > 0 && (<a target="_blank" href={"https://twitter.com/" + profileData.twitter}>
-                                <img src={twitterIcon} />
+                                <img src={TwitterIcon} />
                             </a>
                             )}
                             {profileData.instagram && profileData.instagram.length > 0 && (<a target="_blank" href={"https://instagram.com/" + profileData.instagram}>
@@ -317,7 +325,7 @@ function Profile() {
                     else {
                         return <>
                             {profileData.twitter && profileData.twitter.length > 0 && (<>
-                                <img src={twitterIcon} onClick={openTwitterModalHandler} />
+                                <img src={TwitterIcon} onClick={openTwitterModalHandler} />
                                 {twitterModal && (<LinkModal close={closeTwitterModalHandler} link={"https://twitter.com/" + profileData.twitter} />)}
                             </>
 
