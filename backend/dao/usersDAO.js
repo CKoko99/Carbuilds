@@ -50,7 +50,9 @@ export default class UsersDAO {
                 posts: [],
                 twitter: "",
                 instagram: "",
-                youtube: ""
+                youtube: "",
+                followers: [],
+                following: [],
             })
             let token
             try {
@@ -128,6 +130,8 @@ export default class UsersDAO {
                 instagram: existingUser.instagram,
                 youtube: existingUser.youtube,
                 twitter: existingUser.twitter,
+                following: existingUser.following,
+                followers: existingUser.followers
             }
         } else {
             return { error: { message: "No User Found", code: 422 } }
@@ -159,57 +163,65 @@ export default class UsersDAO {
         return { message: "success" }
     }
 
-    static async followUser(userId, followUserId) {
-        const user = await this.getUser(userId);
-        if (!user) {
-          throw new Error('User not found');
+    static async followUser(userToFollow, userFollowing) {
+        //function to follow a user
+        //add userToFollow to userFollowing's following array
+        //add userFollowing to userToFollow's followers array
+        let userToFollowObj
+        let userFollowingObj
+        try {
+            userToFollowObj = await User.findById(userToFollow)
+            userFollowingObj = await User.findById(userFollowing)
         }
-    
-        const followUser = await this.getUser(followUserId);
-        if (!followUser) {
-          throw new Error('User to follow not found');
+        catch (e) {
+            console.error("Error fetching User")
+            return { error: { message: e.message, code: e.code } }
         }
-    
-        if (user.following.includes(followUserId)) {
-          throw new Error('User already followed');
+        if (userToFollowObj && userFollowingObj) {
+            userToFollowObj.followers.push(userFollowing)
+            userFollowingObj.following.push(userToFollow)
+            try {
+                await userToFollowObj.save()
+                await userFollowingObj.save()
+            } catch (e) {
+                console.error("Error Saving Profile Data")
+                return { error: { message: e.message, code: e.code } }
+            }
         }
-    
-        user.following.push(followUserId);
-        followUser.followers.push(userId);
-    
-        await user.save();
-        await followUser.save();
-    
-        return {
-          following: user.following,
-          followers: followUser.followers,
-        };
-      }
+        else {
+            return { error: { message: "No User Found", code: 422 } }
+        }
+        return { message: "success" }
+    }
     
       static async unfollowUser(userId, unfollowUserId) {
-        const user = await this.getUser(userId);
-        if (!user) {
-          throw new Error('User not found');
+        //function to unfollow a user
+        //remove unfollowUserId from userId's following array
+        //remove userId from unfollowUserId's followers array
+        let userToUnfollowObj
+        let userUnfollowingObj
+        try {
+            userToUnfollowObj = await User.findById(unfollowUserId)
+            userUnfollowingObj = await User.findById(userId)
         }
-    
-        const unfollowUser = await this.getUser(unfollowUserId);
-        if (!unfollowUser) {
-          throw new Error('User to unfollow not found');
+        catch (e) {
+            console.error("Error fetching User")
+            return { error: { message: e.message, code: e.code } }
         }
-    
-        if (!user.following.includes(unfollowUserId)) {
-          throw new Error('User not followed');
+        if (userToUnfollowObj && userUnfollowingObj) {
+            userToUnfollowObj.followers.pull(userId)
+            userUnfollowingObj.following.pull(unfollowUserId)
+            try {
+                await userToUnfollowObj.save()
+                await userUnfollowingObj.save()
+            } catch (e) {
+                console.error("Error Saving Profile Data")
+                return { error: { message: e.message, code: e.code } }
+            }
         }
-    
-        user.following = user.following.filter((id) => id !== unfollowUserId);
-        unfollowUser.followers = unfollowUser.followers.filter((id) => id !== userId);
-    
-        await user.save();
-        await unfollowUser.save();
-    
-        return {
-          following: user.following,
-          followers: unfollowUser.followers,
-        };
+        else {
+            return { error: { message: "No User Found", code: 422 } }
+        }
+        return { message: "success" }
       }
 }
