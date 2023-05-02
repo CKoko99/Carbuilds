@@ -281,7 +281,9 @@ function Profile() {
                         </Box>
                     </Box>
                     <Box sx={{textAlign: {xs: "center", sm: "left"}, mt: 1, mb: 1,}}>
-                        <Button variant="contained" onClick={openEditProfileHandler}>Edit Profile</Button>
+                        {currentUser && <Button variant="contained" onClick={openEditProfileHandler}>Edit Profile</Button>}
+                        {!currentUser && <Button variant="contained">Follow</Button>}
+
                     </Box>
                     <Box sx={{textAlign: {xs: "center", sm: "left"}, mt: 1, mb: 1,}}>
                         <Typography > {profileData.about} </Typography>
