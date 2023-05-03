@@ -239,7 +239,14 @@ function Profile() {
     function closeNewVehicleModalHandle() {
         setVehicleModal(false)
     }
-
+    function updateFollowersArray (newFollowersArray) {
+        //copy current profile data
+        const updatedProfileData = { ...profileData }
+        //update followers array
+        updatedProfileData.followers = newFollowersArray
+        //set profile data to updated profile data
+        setProfileData(updatedProfileData)
+    }
     return <>
         {profileData ? (<>
             <Box sx={{
@@ -285,7 +292,7 @@ function Profile() {
                     </Box>
                     <Box sx={{ textAlign: { xs: "center", sm: "left" }, mt: 1, mb: 1, }}>
                         {currentUser && <Button variant="contained" onClick={openEditProfileHandler}>Edit Profile</Button>}
-                        {!currentUser && <FollowComponent userId={paramId} />}
+                        {!currentUser && <FollowComponent followsUpdated={updateFollowersArray} followers={profileData.followers} userId={paramId} />}
 
                     </Box>
                     <Box sx={{ textAlign: { xs: "center", sm: "left" }, mt: 1, mb: 1, }}>

@@ -163,7 +163,7 @@ export default class UsersDAO {
         return { message: "success" }
     }
 
-    static async followUser(userToFollow, userFollowing) {
+    static async followUser(userFollowing, userToFollow) {
         //function to follow a user
         //add userToFollow to userFollowing's following array
         //add userFollowing to userToFollow's followers array
@@ -171,10 +171,14 @@ export default class UsersDAO {
         let userFollowingObj
         try {
             userToFollowObj = await User.findById(userToFollow)
-            userFollowingObj = await User.findById(userFollowing)
+        }catch(e){
+            console.error("Error fetching user to follow")
+            return { error: { message: e.message, code: e.code } }
         }
-        catch (e) {
-            console.error("Error fetching User")
+        try {
+            userFollowingObj = await User.findById(userFollowing)
+        }catch(e){
+            console.error("Error fetching user following")
             return { error: { message: e.message, code: e.code } }
         }
         if (userToFollowObj && userFollowingObj) {
@@ -183,34 +187,42 @@ export default class UsersDAO {
             try {
                 await userToFollowObj.save()
                 await userFollowingObj.save()
-            } catch (e) {
-                console.error("Error Saving Profile Data")
+            }catch(e){
+                console.error("Error saving user to follow")
                 return { error: { message: e.message, code: e.code } }
             }
+        } else {
+            if(!userToFollowObj){
+                return { error: { message: `No user to follow found id: ${userToFollow}`, code: 422 } }
+            }else{
+                return { error: { message: `No user following found id: ${userFollowing}`, code: 422 } }
+            }
         }
-        else {
-            return { error: { message: "No User Found", code: 422 } }
-        }
+        
         return { message: "success" }
     }
     
-      static async unfollowUser(userId, unfollowUserId) {
+      static async unfollowUser(userUnfollowing, userToUnfollow) {
         //function to unfollow a user
-        //remove unfollowUserId from userId's following array
-        //remove userId from unfollowUserId's followers array
+        //remove userToUnfollow from userUnfollowing's following array
+        //remove userUnfollowing from userToUnfollow's followers array
         let userToUnfollowObj
         let userUnfollowingObj
         try {
-            userToUnfollowObj = await User.findById(unfollowUserId)
-            userUnfollowingObj = await User.findById(userId)
+            userToUnfollowObj = await User.findById(userToUnfollow)
+        }catch(e){
+            console.error("Error fetching user to unfollow")
+            return { error: { message: e.message, code: e.code } }
         }
-        catch (e) {
-            console.error("Error fetching User")
+        try {
+            userUnfollowingObj = await User.findById(userUnfollowing)
+        }catch(e){
+            console.error("Error fetching user unfollowing")
             return { error: { message: e.message, code: e.code } }
         }
         if (userToUnfollowObj && userUnfollowingObj) {
-            userToUnfollowObj.followers.pull(userId)
-            userUnfollowingObj.following.pull(unfollowUserId)
+            userToUnfollowObj.followers.pull(userUnfollowing)
+            userUnfollowingObj.following.pull(userToUnfollow)
             try {
                 await userToUnfollowObj.save()
                 await userUnfollowingObj.save()
@@ -220,8 +232,13 @@ export default class UsersDAO {
             }
         }
         else {
-            return { error: { message: "No User Found", code: 422 } }
+            if(!userToUnfollowObj){
+                return { error: { message: `No User to unfollow found id: ${userToUnfollow}`, code: 422 } }
+            }
+            if(!userUnfollowingObj){
+                return { error: { message: `No User unfollowing Found id:${ userUnfollowing }`, code: 422 } }
+            }
         }
         return { message: "success" }
-      }
+    }
 }

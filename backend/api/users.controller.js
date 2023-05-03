@@ -52,10 +52,10 @@ export default class UsersController {
     }
     static async apiFollowUser(req, res, next) {
         try {
-            const { id: userId } = req.params;
-            const { followUserId } = req.body;
+            const { id: userToFollow } = req.params;
+            const userFollowing  = req.body.userId;
 
-            const result = await UsersDAO.followUser(userId, followUserId);
+            const result = await UsersDAO.followUser(userFollowing, userToFollow);
 
             res.json(result);
         } catch (error) {
@@ -65,10 +65,10 @@ export default class UsersController {
 
     static async apiUnfollowUser(req, res, next) {
         try {
-            const { id: userId } = req.params;
-            const { unfollowUserId } = req.body;
+            const { id: userToUnfollowing } = req.params;
+            const userUnfollowing  = req.body.userId;
 
-            const result = await UsersDAO.unfollowUser(userId, unfollowUserId);
+            const result = await UsersDAO.unfollowUser(userUnfollowing, userToUnfollowing);
 
             res.json(result);
         } catch (error) {
