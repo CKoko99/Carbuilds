@@ -22,6 +22,7 @@ import NewVehicleModal from "../Ui/Modals/NewVehicleModal";
 import { Avatar } from "@mui/material";
 import { height, width } from "@mui/system";
 import { makeStyles } from '@material-ui/core/styles';
+import FollowComponent from "./FollowComponent/FollowComponent";
 
 const User = {
     username: "Kokokrispy",
@@ -69,10 +70,10 @@ const User = {
 
 const useStyles = makeStyles({
     socialIcons: {
-      color: 'black',
-      fontSize: "2.5rem",
+        color: 'black',
+        fontSize: "2.5rem",
     },
-  });
+});
 
 
 function Profile() {
@@ -106,6 +107,8 @@ function Profile() {
 
         }
     }
+
+    
     async function getVehiclesHandler() {
         try {
             const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/vehicles/' + paramId, 'GET', null, {
@@ -255,142 +258,56 @@ function Profile() {
                 display: { xs: "block", sm: "flex" },
             }}>
 
-                <Box sx={{ width: { xs: '90%', sm: '25%' }, margin: { xs: "auto", sm: 0} }}>
+                <Box sx={{ width: { xs: '90%', sm: '25%' }, margin: { xs: "auto", sm: 0 } }}>
                     <Typography variant="h4" component="h1" gutterBottom> {profileData.username} </Typography>
                     <Avatar alt="avatar" src={User.avatar} className={classes.large} sx={{ width: "100%", height: "100%" }} />
                 </Box>
-                <Box sx={{ width: { xs: '90%', sm: '50%' }, margin: "10px auto"}}>
+                <Box sx={{ width: { xs: '90%', sm: '50%' }, margin: "10px auto" }}>
                     <Box sx={{ display: "flex", width: "100%", justifyContent: "space-between" }}>
                         <Box sx={{ display: { xs: "block", sm: "flex" }, fontSize: "1rem" }}>
                             <Box sx={{ marginRight: "4px" }}>
-                                <Typography variant="h6" sx={{fontSize: "1rem",}}> 3 </Typography>
+                                <Typography variant="h6" sx={{ fontSize: "1rem", }}> {profileData.posts.length} </Typography>
                             </Box>
-                            <Typography variant="h6" sx={{fontSize: "1rem",}}>Posts </Typography>
+                            <Typography variant="h6" sx={{ fontSize: "1rem", }}>Posts </Typography>
                         </Box>
                         <Box sx={{ display: { xs: "block", sm: "flex" } }}>
                             <Box sx={{ marginRight: "4px" }}>
-                                <Typography variant="h6" sx={{fontSize: "1rem",}}> 3 </Typography>
+                                <Typography variant="h6" sx={{ fontSize: "1rem", }}> {profileData.followers.length}</Typography>
                             </Box>
-                            <Typography variant="h6" sx={{fontSize: "1rem",}}> Followers </Typography>
+                            <Typography variant="h6" sx={{ fontSize: "1rem", }}> Followers </Typography>
                         </Box>
                         <Box sx={{ display: { xs: "block", sm: "flex" } }}>
                             <Box sx={{ marginRight: "4px" }}>
-                                <Typography variant="h6" sx={{fontSize: "1rem",}}> 3 </Typography>
+                                <Typography variant="h6" sx={{ fontSize: "1rem", }}> {profileData.following.length} </Typography>
                             </Box>
-                            <Typography variant="h6" sx={{fontSize: "1rem",}}> Following </Typography>
+                            <Typography variant="h6" sx={{ fontSize: "1rem", }}> Following </Typography>
                         </Box>
                     </Box>
-                    <Box sx={{textAlign: {xs: "center", sm: "left"}, mt: 1, mb: 1,}}>
+                    <Box sx={{ textAlign: { xs: "center", sm: "left" }, mt: 1, mb: 1, }}>
                         {currentUser && <Button variant="contained" onClick={openEditProfileHandler}>Edit Profile</Button>}
-                        {!currentUser && <Button variant="contained">Follow</Button>}
+                        {!currentUser && <FollowComponent userId={paramId} />}
 
                     </Box>
-                    <Box sx={{textAlign: {xs: "center", sm: "left"}, mt: 1, mb: 1,}}>
+                    <Box sx={{ textAlign: { xs: "center", sm: "left" }, mt: 1, mb: 1, }}>
                         <Typography > {profileData.about} </Typography>
                     </Box>
-                    <Box sx={{textAlign: {xs: "center", sm: "left"}, mt: 1, mb: 1,}}>
-                        {profileData.twitter && profileData.twitter.length > 0 && (<a target="_blank" style={{textDecoration: "none"}} href={"https://twitter.com/" + profileData.twitter}><TwitterIcon className={classes.socialIcons} /> </a>)}
-                        {profileData.instagram && profileData.instagram.length > 0 && (<a target="_blank" style={{textDecoration: "none"}} href={"https://instagram.com/" + profileData.instagram}><InstagramIcon className={classes.socialIcons} /> </a>)}
-                        {profileData.youtube && profileData.youtube.length > 0 && (<a target="_blank" style={{textDecoration: "none"}} href={"https://youtube.com/" + profileData.youtube}><YouTubeIcon className={classes.socialIcons} /></a>)}
+                    <Box sx={{ textAlign: { xs: "center", sm: "left" }, mt: 1, mb: 1, }}>
+                        {profileData.twitter && profileData.twitter.length > 0 && (<a target="_blank" style={{ textDecoration: "none" }} href={"https://twitter.com/" + profileData.twitter}><TwitterIcon className={classes.socialIcons} /> </a>)}
+                        {profileData.instagram && profileData.instagram.length > 0 && (<a target="_blank" style={{ textDecoration: "none" }} href={"https://instagram.com/" + profileData.instagram}><InstagramIcon className={classes.socialIcons} /> </a>)}
+                        {profileData.youtube && profileData.youtube.length > 0 && (<a target="_blank" style={{ textDecoration: "none" }} href={"https://youtube.com/" + profileData.youtube}><YouTubeIcon className={classes.socialIcons} /></a>)}
                     </Box>
                 </Box>
             </Box>
-            END
-            <div className={classes['Profile']}>
-                <div className={classes['username']}>{profileData.username}</div>
-                {currentUser && ("true")}
-                <div className={classes['profile-avi-div']}>
-                    <img alt="avatar" src={User.avatar} />
-                </div>
-                {currentUser && (
-                    <button onClick={openEditProfileHandler}>Edit Profile</button>
-                )}
-                {editProfile && <EditProfile user={profileData} close={closeEditProfileHandler} />}
-                <div className={classes['profile-desc']}>{profileData.about}</div>
-                {(() => {
-                    if (currentUser) {
-                        return <>
-                            {profileData.twitter && profileData.twitter.length > 0 && (<a target="_blank" href={"https://twitter.com/" + profileData.twitter}>
-                                <img src={TwitterIcon} />
-                            </a>
-                            )}
-                            {profileData.instagram && profileData.instagram.length > 0 && (<a target="_blank" href={"https://instagram.com/" + profileData.instagram}>
-                                <img src={instagramIcon} />
-                            </a>
-                            )}
-                            {profileData.youtube && profileData.youtube.length > 0 && (<a target="_blank" href={profileData.youtube}>
-                                <img src={youtubeIcon} />
-                            </a>
-                            )}
-                        </>
-                    }
-                    else {
-                        return <>
-                            {profileData.twitter && profileData.twitter.length > 0 && (<>
-                                <img src={TwitterIcon} onClick={openTwitterModalHandler} />
-                                {twitterModal && (<LinkModal close={closeTwitterModalHandler} link={"https://twitter.com/" + profileData.twitter} />)}
-                            </>
-
-                            )}
-                            {profileData.instagram && profileData.instagram.length > 0 && (
-                                <>
-                                    <img src={instagramIcon} onClick={openInstagramModalHandler} />
-                                    {instagramModal && (<LinkModal close={closeInstagramModalHandler} link={"https://instagram.com/" + profileData.instagram} />)}
-                                </>
-                            )}
-                            {profileData.youtube && profileData.youtube.length > 0 && (
-                                <>
-                                    <img src={youtubeIcon} onClick={openYoutubeModalHandler} />
-                                    {youtubeModal && (<LinkModal close={closeYoutubeModalHandler} link={profileData.youtube} />)}
-                                </>
-                            )}
-                        </>
-
-                    }
-
-                })()}
-                <div className={classes['vehicles-div']}>
-
-                    {Vehicles.length > 1 && (<div className={classes['vehicles-title']}>Vehicles</div>)}
-                    {Vehicles.length < 2 && (<div className={classes['vehicles-title']}>Vehicle</div>)}
-                    <hr />
-                    <div className={classes['vehicles']}>
-                        {Vehicles}
-                        {currentUser && (<>
-                            <div onClick={openNewVehicleModalHandle} className={classes['add-vehicle']}>Add New Vehicle</div>
-                            <Button onClick={openNewVehicleModalHandle}>Add New Vehicle</Button>
-                        </>)
-                        }
-                        {vehicleModal && (<>
-                            <Modal
-                                open={vehicleModal}
-                                onClose={closeNewVehicleModalHandle}
-                                aria-labelledby="modal-modal-title"
-                                aria-describedby="modal-modal-description"
-                            >
-                                <Box>
-                                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                                        Text in a modal
-                                    </Typography>
-                                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                                        Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                                    </Typography>
-                                </Box>
-                            </Modal>
-                        </>) /*(<NewVehicleModal close={closeNewVehicleModalHandle} submitVehicle={submitVehicleHandler} />)*/}
-                        {httpError}
-                    </div>
-                </div>
-                <div className={classes['posts']}>
+            <div className={classes['posts']}>
 
                     <div className={classes['posts-title']}>Posts</div>
                     {Posts}
                 </div>
                 <div className={classes['']}></div>
-            </div>
-        </>) :
-            (<div>User Not Found</div>)
-        }
+
+        </>) : "No Profile Found"}
     </>
 }
+
+
 export default Profile
