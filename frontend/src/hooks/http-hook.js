@@ -17,11 +17,15 @@ export const useHttpClient = () => {
   const activeHttpRequests = useRef([]);
 
   const sendRequest = useCallback(
-    async (url, method = 'GET', body = null, headers = {}) => {
+    async (url, method = 'GET', body = null, headers = {}, fakeLoad= false) => {
       setIsLoading(true);
       setError(null);
       const httpAbortCtrl = new AbortController();
       activeHttpRequests.current.push(httpAbortCtrl);
+      if(fakeLoad){
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+
 
       try {
         const response = await fetch(url, {
