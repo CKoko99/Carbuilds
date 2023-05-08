@@ -3,6 +3,8 @@ import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Avatar } from "@mui/material";
 import { useState } from "react";
+import { useHttpClient } from "../../../hooks/http-hook";
+import { useSelector } from "react-redux";
 
 import caravi from '../CBpost.jpeg'
 const useStyles = makeStyles((theme) => ({
@@ -25,11 +27,12 @@ export default function EditProfileModal(props) {
     function closeModalHandler() {
         props.close()
     }
-    const [bio, setBio] = useState(props.profileData.bio)
+    const [bio, setBio] = useState(props.profileData.about)
     const [twitter, setTwitter] = useState(props.profileData.twitter)
     const [instagram, setInstagram] = useState(props.profileData.instagram)
     const [youtube, setYoutube] = useState(props.profileData.youtube)
-
+    const {httpError, sendRequest} = useHttpClient();
+    const authSelector = useSelector(state => state.auth)
     const handleBioChange = (event) => {
         setBio(event.target.value);
     };
@@ -42,7 +45,26 @@ export default function EditProfileModal(props) {
     const handleYoutubeChange = (event) => {
         setYoutube(event.target.value);
     };
-    return <Modal open={true}
+
+    async function submitProfileHandler() {
+        try {
+            const response = await sendRequest('http://localhost:5001/api/v1/carbuilds/user/update/' + authSelector.userId, 'PATCH', JSON.stringify({
+                about: bio,
+                twitter: twitter,
+                instagram: instagram,
+                youtube: youtube,
+
+            }), {
+                'Content-Type': 'application/json',
+                Authorization: "Bearer " + authSelector.token
+            })
+            if(!response.error){
+                props.submit();
+            }
+        } catch (err) {
+        }
+    }
+    return<> <Modal open={true}
         onClose={closeModalHandler}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
@@ -124,9 +146,13 @@ export default function EditProfileModal(props) {
             </Grid>
             <Box sx={{ display: "flex", justifyContent: "Space-around", mt: "2rem" }}>
 
-                <Button variant="contained" color="error" > Cancel</Button>
-                <Button variant="contained" color="primary"> Apply</Button>
+                <Button variant="contained" color="error" onClick={closeModalHandler} > Cancel</Button>
+                <Button variant="contained" color="primary" onClick={submitProfileHandler}> Apply</Button>
             </Box>
         </Box>
+                        
     </Modal>
+    {httpError && (<div>{httpError}</div>)}
+
+    </>
 }

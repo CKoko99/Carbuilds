@@ -138,7 +138,7 @@ function Profile() {
 
     useEffect(() => {
         async function fetchComments() {
-           
+
             const Comments = [];
             if (userPosts.length > 0) {
                 for (let i = 0; i < userPosts.length; i++) {
@@ -164,37 +164,33 @@ function Profile() {
     }, [userPosts, sendRequest, getCommentsHandler, getUserByIdHandler]);
 
 
-    useEffect(() => {
-        async function getUserData() {
-            let responseData;
-            try {
-                responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/user/' + paramId, "GET", null, {
-                    'Content-Type': 'application/json'
-                });
-                if (responseData.error) {
-                    setErrorFetchingProfile(true);
-                    return null;
-                } else {
-                    return responseData;
-                }
-            } catch (err) {
+    const getUserData = useCallback(async () => {
+        try {
+            const responseData = await sendRequest(`http://localhost:5001/api/v1/carbuilds/user/${paramId}`, "GET", null, {
+                "Content-Type": "application/json"
+            }, true);
+            if (responseData.error) {
                 setErrorFetchingProfile(true);
+                return null;
+            } else {
+                return responseData;
             }
+        } catch (err) {
+            setErrorFetchingProfile(true);
         }
-
-        async function fetchData() {
-            const userData = await getUserData();
-            console.log("userData");
-            console.log(userData);
-            setProfileData(userData);
-            setProfileDataLoading(false);
-            getVehiclesHandler();
-            getPostsHandler();
-        }
-
+    }, [paramId, sendRequest, setErrorFetchingProfile]);
+    const  fetchData = useCallback(async()=> {
+        const userData = await getUserData();
+        console.log("userData");
+        console.log(userData);
+        setProfileData(userData);
+        setProfileDataLoading(false);
+        getVehiclesHandler();
+        getPostsHandler();
+    },[getUserData, getPostsHandler, getVehiclesHandler])
+    useEffect(() => {
         fetchData();
-    }, [paramId, sendRequest, getPostsHandler, getVehiclesHandler]);
-
+    }, [fetchData]);
 
     const Posts = userPosts.map(post => {
         let matchingCar
@@ -236,6 +232,10 @@ function Profile() {
     }
     function closeEditProfileHandler() {
         setEditProfile(false)
+    }
+    function reloadUserData(){
+        fetchData();
+        closeEditProfileHandler();
     }
     return <>
         {errorFetchingProfile && "No Profile Found"}
@@ -290,7 +290,7 @@ function Profile() {
                         <Typography > {profileData.about} </Typography>
                     </Box>
                     <Box sx={{ textAlign: { xs: "center", sm: "left" }, mt: 1, mb: 1, }}>
-                        {profileData.twitter && profileData.twitter.length > 0 && (<a target="_blank" rel="noopener noreferrer"style={{ textDecoration: "none" }} href={"https://twitter.com/" + profileData.twitter}><TwitterIcon className={classes.socialIcons} /> </a>)}
+                        {profileData.twitter && profileData.twitter.length > 0 && (<a target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }} href={"https://twitter.com/" + profileData.twitter}><TwitterIcon className={classes.socialIcons} /> </a>)}
                         {profileData.instagram && profileData.instagram.length > 0 && (<a target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }} href={"https://instagram.com/" + profileData.instagram}><InstagramIcon className={classes.socialIcons} /> </a>)}
                         {profileData.youtube && profileData.youtube.length > 0 && (<a target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }} href={"https://youtube.com/" + profileData.youtube}><YouTubeIcon className={classes.socialIcons} /></a>)}
                     </Box>
@@ -299,6 +299,7 @@ function Profile() {
             {editProfile && <EditProfileModal
 
                 close={closeEditProfileHandler}
+                submit={reloadUserData}
                 open={openEditProfileHandler}
                 profileData={profileData}
                 userId={paramId}

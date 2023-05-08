@@ -10,13 +10,13 @@ import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 
-import Grid from '@mui/material/Grid';
+
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
+
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { LinearProgress, Modal } from '@material-ui/core';
+import { LinearProgress } from '@material-ui/core';
 
 
 const theme = createTheme();
@@ -29,8 +29,6 @@ function Login() {
     const [usernameError, setUsernameError] = useState(null)
     const [passwordError, setPasswordError] = useState(null)
 
-    const [loginError, setLoginError] = useState(false)
-    const [loginErrorMessage, setLoginErrorMessage] = useState("")
     const usernameRef = useRef()
     const passwordRef = useRef()
     function redirectSignup() {
