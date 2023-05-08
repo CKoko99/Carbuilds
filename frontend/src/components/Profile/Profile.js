@@ -1,5 +1,5 @@
 import classes from "./Profile.module.css";
-import { Modal, Typography, Box, Button } from '@material-ui/core'
+import { Modal, Typography, Box, Button, CircularProgress } from '@material-ui/core'
 import Profilecard from "../Posts/ProfileCard";
 import Vehicle from "../Ui/vehicle/vehicle";
 import EditProfile from "../Ui/Modals/EditProfile";
@@ -93,6 +93,8 @@ function Profile() {
     const authDispatch = useDispatch(authActions)
     const { isLoading, httpError, sendRequest, clearError } = useHttpClient()
     const currentUser = paramId === authSelector.userId ? true : false
+    const [errorFetchingProfile, setErrorFetchingProfile ] = useState(false)
+    const [profileDataLoading, setProfileDataLoading] = useState(true)
     async function getUserData() {
         let responseData
         try {
@@ -100,12 +102,14 @@ function Profile() {
                 'Content-Type': 'application/json'
             })
             if (responseData.error) {
+                setErrorFetchingProfile(true)
                 return null
+
             } else {
                 return responseData
             }
         } catch (err) {
-
+            setErrorFetchingProfile(true)
         }
     }
 
@@ -177,6 +181,7 @@ function Profile() {
         console.log("userData")
         console.log(userData)
         setProfileData(userData)
+        setProfileDataLoading(false)
         getVehiclesHandler()
         getPostsHandler()
     }, [])
@@ -259,7 +264,9 @@ function Profile() {
         setOpenFollowModal(false)
     }
     return <>
-        {profileData ? (<>
+        {errorFetchingProfile && "No Profile Found"}
+        {profileDataLoading && <CircularProgress />}
+        {profileData && <>
             <Box sx={{
                 marginTop: 15,
                 flexDirection: 'row',
@@ -315,7 +322,7 @@ function Profile() {
                     </Box>
                 </Box>
             </Box>
-            {openFollowModal &&<FollowListModal
+            {openFollowModal && <FollowListModal
                 followersList={profileData.followers}
                 followingList={profileData.following}
                 modalTab={openFollowModal}
@@ -330,7 +337,9 @@ function Profile() {
             </div>
             <div className={classes['']}></div>
 
-        </>) : "No Profile Found"}
+        </>
+        }
+
     </>
 }
 
