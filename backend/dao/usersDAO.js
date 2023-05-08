@@ -68,18 +68,25 @@ export default class UsersDAO {
             return { error: { message: e.message, code: e.code } }
         }
     }
-    static async getUsers() {
-        console.log("start")
-        let usersList
-        let cursor
+    static async getUsers(usersIds) {
         try {
-            
-            cursor = await User.find()
-            usersList = cursor.map(user => user.toObject())
-            return { usersList, totalUsers: usersList.length }
-        } catch (e) {
-            console.error(`Error: ${e}`)
-            return { usersList: [], totalUsers: 0 }
+            let usersList;
+            let cursor;
+    
+            if (usersIds && usersIds.length > 0) {
+                const userIdsArray = usersIds.map(userId => new ObjectID(userId));
+                cursor = await User.find({ _id: { $in: userIdsArray } });
+            } else {
+                cursor = await User.find();
+            }
+    
+            usersList = cursor.map(user => user.toObject());
+            const totalUsers = usersList.length;
+    
+            return { usersList, totalUsers };
+        } catch (error) {
+            console.error(`Error: ${error}`);
+            return { usersList: [], totalUsers: 0 };
         }
     }
     static async loginUser(username, password) {
@@ -171,13 +178,13 @@ export default class UsersDAO {
         let userFollowingObj
         try {
             userToFollowObj = await User.findById(userToFollow)
-        }catch(e){
+        } catch (e) {
             console.error("Error fetching user to follow")
             return { error: { message: e.message, code: e.code } }
         }
         try {
             userFollowingObj = await User.findById(userFollowing)
-        }catch(e){
+        } catch (e) {
             console.error("Error fetching user following")
             return { error: { message: e.message, code: e.code } }
         }
@@ -187,36 +194,37 @@ export default class UsersDAO {
             try {
                 await userToFollowObj.save()
                 await userFollowingObj.save()
-            }catch(e){
+            } catch (e) {
                 console.error("Error saving user to follow")
                 return { error: { message: e.message, code: e.code } }
             }
         } else {
-            if(!userToFollowObj){
+            if (!userToFollowObj) {
                 return { error: { message: `No user to follow found id: ${userToFollow}`, code: 422 } }
-            }else{
+            } else {
                 return { error: { message: `No user following found id: ${userFollowing}`, code: 422 } }
             }
         }
-        
+
         return { message: "success" }
     }
-    
-      static async unfollowUser(userUnfollowing, userToUnfollow) {
+
+    static async unfollowUser(userUnfollowing, userToUnfollow) {
         //function to unfollow a user
         //remove userToUnfollow from userUnfollowing's following array
         //remove userUnfollowing from userToUnfollow's followers array
         let userToUnfollowObj
         let userUnfollowingObj
+
         try {
             userToUnfollowObj = await User.findById(userToUnfollow)
-        }catch(e){
+        } catch (e) {
             console.error("Error fetching user to unfollow")
             return { error: { message: e.message, code: e.code } }
         }
         try {
             userUnfollowingObj = await User.findById(userUnfollowing)
-        }catch(e){
+        } catch (e) {
             console.error("Error fetching user unfollowing")
             return { error: { message: e.message, code: e.code } }
         }
@@ -232,13 +240,47 @@ export default class UsersDAO {
             }
         }
         else {
-            if(!userToUnfollowObj){
+            if (!userToUnfollowObj) {
                 return { error: { message: `No User to unfollow found id: ${userToUnfollow}`, code: 422 } }
             }
-            if(!userUnfollowingObj){
-                return { error: { message: `No User unfollowing Found id:${ userUnfollowing }`, code: 422 } }
+            if (!userUnfollowingObj) {
+                return { error: { message: `No User unfollowing Found id:${userUnfollowing}`, code: 422 } }
             }
         }
         return { message: "success" }
+    }
+
+    static async getUsersFollowers(id) {
+        //function to get followers usernames by user id
+        let existingUser
+        try {
+            existingUser = await User.findById(id).populate('followers', "username")
+        } catch (e) {
+            console.error("Error fetching User")
+            return { error: { message: e.message, code: e.code } }
+        }
+        if (existingUser) {
+            return { followers: existingUser.followers }
+        }
+        else {
+            return { error: { message: "No User Found", code: 422 } }
+        }
+    }
+
+    static async getUsersFollowing(id) {
+        //function to get following usernames by user id
+        let existingUser
+        try {
+            existingUser = await User.findById(id).populate('following', "username")
+        } catch (e) {
+            console.error("Error fetching User")
+            return { error: { message: e.message, code: e.code } }
+        }
+        if (existingUser) {
+            return { following: existingUser.following }
+        }
+        else {
+            return { error: { message: "No User Found", code: 422 } }
+        }
     }
 }

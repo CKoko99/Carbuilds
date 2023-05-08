@@ -22,9 +22,16 @@ export default class UsersController {
     }
     static async apiGetUsers(req, res, next) {
         try {
-            const { usersList, totalUsers } = await UsersDAO.getUsers()
-            let response = { usersList, totalUsers }
-            res.json(response)
+            //Optional query parameters for a list of users
+            if (req.body.users) {
+                const { usersList, totalUsers } = await UsersDAO.getUsers(req.body.users)
+                let response = { usersList, totalUsers }
+                return res.json(response)
+            } else {
+                const { usersList, totalUsers } = await UsersDAO.getUsers()
+                let response = { usersList, totalUsers }
+                res.json(response)
+            }
         } catch (error) {
             console.error(`Error while getting users: ${error}`)
             res.status(500).json({ error: "Internal Server Error" })
@@ -53,7 +60,7 @@ export default class UsersController {
     static async apiFollowUser(req, res, next) {
         try {
             const { id: userToFollow } = req.params;
-            const userFollowing  = req.body.userId;
+            const userFollowing = req.body.userId;
 
             const result = await UsersDAO.followUser(userFollowing, userToFollow);
 
@@ -64,11 +71,34 @@ export default class UsersController {
     }
 
     static async apiUnfollowUser(req, res, next) {
+
         try {
             const { id: userToUnfollowing } = req.params;
-            const userUnfollowing  = req.body.userId;
+            const userUnfollowing = req.body.userId;
 
             const result = await UsersDAO.unfollowUser(userUnfollowing, userToUnfollowing);
+
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+    static async apiGetUserFollowers(req, res, next) {
+        try {
+            const { id } = req.params;
+            console.log(id)
+            const result = await UsersDAO.getUsersFollowers(id);
+
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+    static async apiGetUserFollowing(req, res, next) {
+        try {
+            const { id } = req.params;
+
+            const result = await UsersDAO.getUsersFollowing(id);
 
             res.json(result);
         } catch (error) {

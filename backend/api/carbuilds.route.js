@@ -19,6 +19,11 @@ router.route('/users/avatar/:id').post(fileupload.single('image'))
 router.route('/users/login').post(userCTRL.apiLoginUser)
 router.route('/user/:id').get(userCTRL.apiGetUserById)
 
+//route to get users followers
+router.route('/user/:id/followers').get(userCTRL.apiGetUserFollowers)
+//route to get users following
+router.route('/user/:id/following').get(userCTRL.apiGetUserFollowing)
+
 router.route('/posts').get(postCTRL.apiGetPosts).post(postCTRL.apiCreatePost)
 router.route('/posts/:id').get(postCTRL.apiGetPost)
 router.route('/posts/user/:id').get(postCTRL.apiGetUserPosts)
