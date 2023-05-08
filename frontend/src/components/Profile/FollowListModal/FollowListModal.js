@@ -51,7 +51,6 @@ function a11yProps(index) {
 export default function FollowListModal(props) {
     const classes = useStyles();
 
-    const [modalOpen, setModalOpen] = useState(true)
     const [modalTab, setModalTab] = useState(props.modalTab)
     const handleChange = (event, newValue) => {
         console.log(newValue)
@@ -98,7 +97,7 @@ export default function FollowListModal(props) {
     }
     return <>
         <Modal
-            open={modalOpen}
+            open={true}
             onClose={closeModalHandler}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"

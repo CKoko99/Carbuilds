@@ -1,8 +1,8 @@
-import classes from "./Profile.module.css";
-import { Modal, Typography, Box, Button, CircularProgress } from '@material-ui/core'
+
+import { Typography, Box, Button, CircularProgress } from '@material-ui/core'
 import Profilecard from "../Posts/ProfileCard";
 import Vehicle from "../Ui/vehicle/vehicle";
-import EditProfile from "../Ui/Modals/EditProfile";
+
 
 import caravi from './CBmycar.png'
 import cbpost from './CBpost.jpeg'
@@ -14,17 +14,14 @@ import { authActions } from "../../store/store";
 import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import YouTubeIcon from '@mui/icons-material/YouTube';
-import instagramIcon from '../../icons/socials/instagram.png'
-import youtubeIcon from '../../icons/socials/youtube.png'
+
 import { useParams } from "react-router-dom";
-import LinkModal from "../Ui/Modals/LinkModal";
-import NewVehicleModal from "../Ui/Modals/NewVehicleModal";
+
 import { Avatar } from "@mui/material";
-import { height, width } from "@mui/system";
 import { makeStyles } from '@material-ui/core/styles';
 import FollowComponent from "./FollowComponent/FollowComponent";
 import FollowListModal from "./FollowListModal/FollowListModal";
-
+import EditProfileModal from './EditProfileModal/EditProfileModal';
 const User = {
     username: "Kokokrispy",
     avatar: caravi,
@@ -84,7 +81,6 @@ function Profile() {
     const [usersVehicles, setUsersVehicles] = useState([])
     const [userPosts, setUserPosts] = useState([])
     const [postsComments, setPostsComments] = useState([])
-    const [editProfile, setEditProfile] = useState(false)
     const [twitterModal, setTwitterModal] = useState(false)
     const [instagramModal, setInstagramModal] = useState(false)
     const [youtubeModal, setYoutubeModal] = useState(false)
@@ -215,9 +211,7 @@ function Profile() {
         }
         getVehiclesHandler()
     }
-    function openEditProfileHandler() {
-        setEditProfile(true)
-    }
+   
     function closeEditProfileHandler() {
         setEditProfile(false)
     }
@@ -262,6 +256,15 @@ function Profile() {
     }
     function closeFollowModalHandler() {
         setOpenFollowModal(false)
+    }
+
+    const [editProfile, setEditProfile] = useState(false)
+
+    function openEditProfileHandler() {
+        setEditProfile(true)
+    }
+    function closeEditProfileHandler() {
+        setEditProfile(false)
     }
     return <>
         {errorFetchingProfile && "No Profile Found"}
@@ -322,6 +325,13 @@ function Profile() {
                     </Box>
                 </Box>
             </Box>
+            {editProfile && <EditProfileModal
+            
+                close={closeEditProfileHandler}
+                open={openEditProfileHandler}
+                profileData={profileData}
+                userId={paramId}
+            />}
             {openFollowModal && <FollowListModal
                 followersList={profileData.followers}
                 followingList={profileData.following}
