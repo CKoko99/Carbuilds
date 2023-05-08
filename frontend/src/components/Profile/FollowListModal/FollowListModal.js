@@ -122,7 +122,7 @@ export default function FollowListModal(props) {
                 <TabPanel value={modalTab} index={"Following"}>
                     {isLoading && <Box textAlign={"center"}><CircularProgress /></Box>}
                     {followingList.map((user) => {
-                        return <div>{user.username}</div>
+                        return <Box sx={{ display: "flex", alignItems: "center"}}><Avatar style={{marginRight: "1rem", width: "3rem", height: "3rem"}} src={caravi}/><Typography >{user.username}</Typography></Box>
                     })}
                 </TabPanel>
             </Box>
