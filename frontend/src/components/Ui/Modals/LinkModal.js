@@ -1,12 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { useHttpClient } from "../../../hooks/http-hook";
+
+
 import Modal from "./Modal";
 import classes from './Modal.module.css'
 
 
 export default function LinkModal(props) {
-    const { isLoading, httpError, sendRequest, clearError } = useHttpClient()
     
     return <Modal title={"You Are Leaving Carbuilds"} close={props.close}>
         <>Continue to <span style={{ fontWeight: "bold" }}>{props.link}?</span></>

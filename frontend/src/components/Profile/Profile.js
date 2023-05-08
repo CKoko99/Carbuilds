@@ -1,16 +1,11 @@
 
 import { Typography, Box, Button, CircularProgress } from '@material-ui/core'
 import Profilecard from "../Posts/ProfileCard";
-import Vehicle from "../Ui/vehicle/vehicle";
-
-
 import caravi from './CBmycar.png'
 import cbpost from './CBpost.jpeg'
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState, useCallback } from "react";
+import { useSelector } from "react-redux";
 import { useHttpClient } from "../../hooks/http-hook";
-import { authActions } from "../../store/store";
-
 import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import YouTubeIcon from '@mui/icons-material/YouTube';
@@ -81,109 +76,126 @@ function Profile() {
     const [usersVehicles, setUsersVehicles] = useState([])
     const [userPosts, setUserPosts] = useState([])
     const [postsComments, setPostsComments] = useState([])
-    const [twitterModal, setTwitterModal] = useState(false)
-    const [instagramModal, setInstagramModal] = useState(false)
-    const [youtubeModal, setYoutubeModal] = useState(false)
-    const [vehicleModal, setVehicleModal] = useState(false)
     const authSelector = useSelector(state => state.auth)
-    const authDispatch = useDispatch(authActions)
-    const { isLoading, httpError, sendRequest, clearError } = useHttpClient()
+    const { sendRequest } = useHttpClient()
     const currentUser = paramId === authSelector.userId ? true : false
-    const [errorFetchingProfile, setErrorFetchingProfile ] = useState(false)
+    const [errorFetchingProfile, setErrorFetchingProfile] = useState(false)
     const [profileDataLoading, setProfileDataLoading] = useState(true)
-    async function getUserData() {
-        let responseData
+
+
+    const getVehiclesHandler = useCallback(async () => {
         try {
-            responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/user/' + paramId, "GET", null, {
+            const responseData = await sendRequest(`http://localhost:5001/api/v1/carbuilds/vehicles/${paramId}`, 'GET', null, {
                 'Content-Type': 'application/json'
-            })
-            if (responseData.error) {
-                setErrorFetchingProfile(true)
-                return null
+            });
 
-            } else {
-                return responseData
-            }
-        } catch (err) {
-            setErrorFetchingProfile(true)
-        }
-    }
-
-
-    async function getVehiclesHandler() {
-        try {
-            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/vehicles/' + paramId, 'GET', null, {
-                'Content-Type': 'application/json'
-            })
             if (!responseData.error) {
-                setUsersVehicles(responseData.vehiclesList)
+                setUsersVehicles(responseData.vehiclesList);
             }
+        } catch (err) {
+            // handle error
+        }
+    }, [sendRequest, paramId, setUsersVehicles]);
 
-        } catch (err) {
-        }
-    }
-    async function getPostsHandler() {
+    const getPostsHandler = useCallback(async () => {
         try {
-            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/posts/user/' + paramId, 'GET', null, {
+            const responseData = await sendRequest(`http://localhost:5001/api/v1/carbuilds/posts/user/${paramId}`, 'GET', null, {
                 'Content-Type': 'application/json'
-            })
+            });
+
             if (!responseData.error) {
-                setUserPosts(responseData.postList)
+                setUserPosts(responseData.postList);
             }
         } catch (err) {
+            // handle error
         }
-    }
-    async function getCommentsHandler(postId) {
+    }, [sendRequest, paramId, setUserPosts]);
+
+    const getUserByIdHandler = useCallback(async (userId) => {
         try {
-            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/comments/' + postId, 'GET', null, {
+            const responseData = await sendRequest(`http://localhost:5001/api/v1/carbuilds/user/${userId}`, 'GET', null, {
                 'Content-Type': 'application/json'
-            })
-            return responseData
+            });
+
+            return responseData;
         } catch (e) {
-            console.log(e)
+            console.log(e);
         }
-    }
-    async function getUserByIdHandler(userId) {
+    }, [sendRequest]);
+
+    const getCommentsHandler = useCallback(async (postId) => {
         try {
-            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/user/' + userId, 'GET', null, {
+            const responseData = await sendRequest(`http://localhost:5001/api/v1/carbuilds/comments/${postId}`, 'GET', null, {
                 'Content-Type': 'application/json'
-            })
-            return responseData
+            });
+
+            return responseData;
         } catch (e) {
-            console.log(e)
+            console.log(e);
         }
-    }
-    useEffect(async () => {
-        const Comments = []
-        if (userPosts.length > 0) {
-            for (let i = 0; i < userPosts.length; i++) {
-                if (userPosts[i].comments.length > 0) {
-                    const subComments = { postId: userPosts[i]._id, comments: [] }
-                    let postComments = await getCommentsHandler(userPosts[i]._id)
-                    for (let j = 0; j < postComments.length; j++) {
-                        let user = await getUserByIdHandler(postComments[j].creator)
-                        let commentObj = { username: user.username, userId: postComments[j].creator, text: postComments[j].text }
-                        subComments.comments.push(commentObj)
+    }, [sendRequest]);
+
+
+    useEffect(() => {
+        async function fetchComments() {
+           
+            const Comments = [];
+            if (userPosts.length > 0) {
+                for (let i = 0; i < userPosts.length; i++) {
+                    if (userPosts[i].comments.length > 0) {
+                        const subComments = { postId: userPosts[i]._id, comments: [] };
+                        let postComments = await getCommentsHandler(userPosts[i]._id);
+                        for (let j = 0; j < postComments.length; j++) {
+                            let user = await getUserByIdHandler(postComments[j].creator);
+                            let commentObj = { username: user.username, userId: postComments[j].creator, text: postComments[j].text };
+                            subComments.comments.push(commentObj);
+                        }
+                        Comments.push(subComments);
                     }
-                    Comments.push(subComments)
                 }
             }
+            console.log(Comments);
+            setPostsComments(Comments);
         }
-        console.log(Comments)
-        setPostsComments(Comments)
-    }, [userPosts])
-    useEffect(async () => {
-        const userData = await getUserData()
-        console.log("userData")
-        console.log(userData)
-        setProfileData(userData)
-        setProfileDataLoading(false)
-        getVehiclesHandler()
-        getPostsHandler()
-    }, [])
-    const Vehicles = usersVehicles.map(car => {
-        return <div style={{ paddingRight: '.5em' }}><Vehicle key={car.id} year={car.year} make={car.make} model={car.model} /></div>
-    })
+
+        if (userPosts.length > 0) {
+            fetchComments();
+        }
+    }, [userPosts, sendRequest, getCommentsHandler, getUserByIdHandler]);
+
+
+    useEffect(() => {
+        async function getUserData() {
+            let responseData;
+            try {
+                responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/user/' + paramId, "GET", null, {
+                    'Content-Type': 'application/json'
+                });
+                if (responseData.error) {
+                    setErrorFetchingProfile(true);
+                    return null;
+                } else {
+                    return responseData;
+                }
+            } catch (err) {
+                setErrorFetchingProfile(true);
+            }
+        }
+
+        async function fetchData() {
+            const userData = await getUserData();
+            console.log("userData");
+            console.log(userData);
+            setProfileData(userData);
+            setProfileDataLoading(false);
+            getVehiclesHandler();
+            getPostsHandler();
+        }
+
+        fetchData();
+    }, [paramId, sendRequest, getPostsHandler, getVehiclesHandler]);
+
+
     const Posts = userPosts.map(post => {
         let matchingCar
         if (post.vehicle) {
@@ -196,49 +208,8 @@ function Profile() {
             return <Profilecard reload={getPostsHandler} key={post.id} postid={post._id} comments={commentsForPost} title={post.title} username={profileData.username} description={post.description} likes={post.likes} imgs={User.Posts[0].pics} />
         }
     })
-    async function submitVehicleHandler(vehicleobject) {
-        try {
-            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/vehicles', 'POST', JSON.stringify({
-                userId: authSelector.userId,
-                model: vehicleobject.model,
-                year: vehicleobject.year,
-                make: vehicleobject.make
-            }), {
-                'Content-Type': 'application/json'
-            })
-            closeNewVehicleModalHandle()
-        } catch (err) {
-        }
-        getVehiclesHandler()
-    }
-   
-    function closeEditProfileHandler() {
-        setEditProfile(false)
-    }
-    function openTwitterModalHandler() {
-        setTwitterModal(true)
-    }
-    function closeTwitterModalHandler() {
-        setTwitterModal(false)
-    }
-    function openInstagramModalHandler() {
-        setInstagramModal(true)
-    }
-    function closeInstagramModalHandler() {
-        setInstagramModal(false)
-    }
-    function openYoutubeModalHandler() {
-        setYoutubeModal(true)
-    }
-    function closeYoutubeModalHandler() {
-        setYoutubeModal(false)
-    }
-    function openNewVehicleModalHandle() {
-        setVehicleModal(true)
-    }
-    function closeNewVehicleModalHandle() {
-        setVehicleModal(false)
-    }
+
+
     function updateFollowersArray(newFollowersArray) {
         //copy current profile data
         const updatedProfileData = { ...profileData }
@@ -319,14 +290,14 @@ function Profile() {
                         <Typography > {profileData.about} </Typography>
                     </Box>
                     <Box sx={{ textAlign: { xs: "center", sm: "left" }, mt: 1, mb: 1, }}>
-                        {profileData.twitter && profileData.twitter.length > 0 && (<a target="_blank" style={{ textDecoration: "none" }} href={"https://twitter.com/" + profileData.twitter}><TwitterIcon className={classes.socialIcons} /> </a>)}
-                        {profileData.instagram && profileData.instagram.length > 0 && (<a target="_blank" style={{ textDecoration: "none" }} href={"https://instagram.com/" + profileData.instagram}><InstagramIcon className={classes.socialIcons} /> </a>)}
-                        {profileData.youtube && profileData.youtube.length > 0 && (<a target="_blank" style={{ textDecoration: "none" }} href={"https://youtube.com/" + profileData.youtube}><YouTubeIcon className={classes.socialIcons} /></a>)}
+                        {profileData.twitter && profileData.twitter.length > 0 && (<a target="_blank" rel="noopener noreferrer"style={{ textDecoration: "none" }} href={"https://twitter.com/" + profileData.twitter}><TwitterIcon className={classes.socialIcons} /> </a>)}
+                        {profileData.instagram && profileData.instagram.length > 0 && (<a target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }} href={"https://instagram.com/" + profileData.instagram}><InstagramIcon className={classes.socialIcons} /> </a>)}
+                        {profileData.youtube && profileData.youtube.length > 0 && (<a target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }} href={"https://youtube.com/" + profileData.youtube}><YouTubeIcon className={classes.socialIcons} /></a>)}
                     </Box>
                 </Box>
             </Box>
             {editProfile && <EditProfileModal
-            
+
                 close={closeEditProfileHandler}
                 open={openEditProfileHandler}
                 profileData={profileData}
