@@ -40,10 +40,12 @@ export default function FollowComponent(props) {
                     setIsFollowing(false)
                     const updatedFollowers = props.followers.filter((follower) => follower !== authSelector.userId)
                     props.followsUpdated(updatedFollowers)
+                    handleClose();
+                    setIsFollowing(false);
                 }
             }
         } catch (err) {
-
+            console.log(err)
         }
     }
     const [anchorEl, setAnchorEl] = useState(null);
@@ -57,8 +59,6 @@ export default function FollowComponent(props) {
     const handleUnfollowClick = () => {
 
         followUserHandler("DELETE");
-        handleClose();
-        setIsFollowing(false);
 
     };
     return <>

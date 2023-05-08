@@ -23,6 +23,7 @@ import { Avatar } from "@mui/material";
 import { height, width } from "@mui/system";
 import { makeStyles } from '@material-ui/core/styles';
 import FollowComponent from "./FollowComponent/FollowComponent";
+import FollowListModal from "./FollowListModal/FollowListModal";
 
 const User = {
     username: "Kokokrispy",
@@ -108,7 +109,7 @@ function Profile() {
         }
     }
 
-    
+
     async function getVehiclesHandler() {
         try {
             const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/vehicles/' + paramId, 'GET', null, {
@@ -239,13 +240,23 @@ function Profile() {
     function closeNewVehicleModalHandle() {
         setVehicleModal(false)
     }
-    function updateFollowersArray (newFollowersArray) {
+    function updateFollowersArray(newFollowersArray) {
         //copy current profile data
         const updatedProfileData = { ...profileData }
         //update followers array
         updatedProfileData.followers = newFollowersArray
         //set profile data to updated profile data
         setProfileData(updatedProfileData)
+    }
+
+    const [openFollowModal, setOpenFollowModal] = useState(false)
+
+    function openFollowModalHandler(mode) {
+        setOpenFollowModal(mode)
+        console.log("clicked")
+    }
+    function closeFollowModalHandler() {
+        setOpenFollowModal(false)
     }
     return <>
         {profileData ? (<>
@@ -267,7 +278,7 @@ function Profile() {
 
                 <Box sx={{ width: { xs: '90%', sm: '25%' }, margin: { xs: "auto", sm: 0 } }}>
                     <Typography variant="h4" component="h1" gutterBottom> {profileData.username} </Typography>
-                    <Avatar alt="avatar" src={User.avatar} className={classes.large} sx={{ width: "100%", height: "100%" }} />
+                    <Avatar alt="avatar" src={User.avatar} sx={{ width: "14rem !important", height: "14rem !important", display: "block" }} />
                 </Box>
                 <Box sx={{ width: { xs: '90%', sm: '50%' }, margin: "10px auto" }}>
                     <Box sx={{ display: "flex", width: "100%", justifyContent: "space-between" }}>
@@ -277,13 +288,13 @@ function Profile() {
                             </Box>
                             <Typography variant="h6" sx={{ fontSize: "1rem", }}>Posts </Typography>
                         </Box>
-                        <Box sx={{ display: { xs: "block", sm: "flex" } }}>
+                        <Box onClick={() => { openFollowModalHandler("Followers") }} sx={{ display: { xs: "block", sm: "flex" } }}>
                             <Box sx={{ marginRight: "4px" }}>
                                 <Typography variant="h6" sx={{ fontSize: "1rem", }}> {profileData.followers.length}</Typography>
                             </Box>
                             <Typography variant="h6" sx={{ fontSize: "1rem", }}> Followers </Typography>
                         </Box>
-                        <Box sx={{ display: { xs: "block", sm: "flex" } }}>
+                        <Box onClick={() => { openFollowModalHandler("Following") }} sx={{ display: { xs: "block", sm: "flex" } }}>
                             <Box sx={{ marginRight: "4px" }}>
                                 <Typography variant="h6" sx={{ fontSize: "1rem", }}> {profileData.following.length} </Typography>
                             </Box>
@@ -293,7 +304,6 @@ function Profile() {
                     <Box sx={{ textAlign: { xs: "center", sm: "left" }, mt: 1, mb: 1, }}>
                         {currentUser && <Button variant="contained" onClick={openEditProfileHandler}>Edit Profile</Button>}
                         {!currentUser && <FollowComponent followsUpdated={updateFollowersArray} followers={profileData.followers} userId={paramId} />}
-
                     </Box>
                     <Box sx={{ textAlign: { xs: "center", sm: "left" }, mt: 1, mb: 1, }}>
                         <Typography > {profileData.about} </Typography>
@@ -305,12 +315,20 @@ function Profile() {
                     </Box>
                 </Box>
             </Box>
+            {openFollowModal &&<FollowListModal
+                followersList={profileData.followers}
+                followingList={profileData.following}
+                modalTab={openFollowModal}
+                user={paramId}
+                close={closeFollowModalHandler}
+                open={openFollowModal}
+            />}
             <div className={classes['posts']}>
 
-                    <div className={classes['posts-title']}>Posts</div>
-                    {Posts}
-                </div>
-                <div className={classes['']}></div>
+                <div className={classes['posts-title']}>Posts</div>
+                {Posts}
+            </div>
+            <div className={classes['']}></div>
 
         </>) : "No Profile Found"}
     </>
