@@ -260,7 +260,7 @@ export default class UsersDAO {
             return { error: { message: e.message, code: e.code } }
         }
         if (existingUser) {
-            return { followers: existingUser.followers }
+            return { userList: existingUser.followers }
         }
         else {
             return { error: { message: "No User Found", code: 422 } }
@@ -277,7 +277,7 @@ export default class UsersDAO {
             return { error: { message: e.message, code: e.code } }
         }
         if (existingUser) {
-            return { following: existingUser.following }
+            return { userList: existingUser.following }
         }
         else {
             return { error: { message: "No User Found", code: 422 } }
