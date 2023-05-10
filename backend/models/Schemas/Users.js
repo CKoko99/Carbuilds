@@ -48,7 +48,10 @@ const UsersSchema = new Schema({
             type: mongoose.Types.ObjectId,
             ref: 'User'
         }
-    ]
+    ],
+    profilePicture: {
+        type: String,
+    }
     ,
 })
 

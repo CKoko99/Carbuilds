@@ -81,7 +81,8 @@ export default function EditAvatarModal(props) {
                 formData, {
                 Authorization: "Bearer " + authSelector.token
             });
-            console.log("Image uploaded successfully: ", responseData);
+            console.log("Image uploaded successfully: ")
+            console.log(responseData);
         } catch (err) {
             console.error("Error uploading image: ", err);
         }

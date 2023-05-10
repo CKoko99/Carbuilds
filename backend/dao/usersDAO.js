@@ -72,17 +72,17 @@ export default class UsersDAO {
         try {
             let usersList;
             let cursor;
-    
+
             if (usersIds && usersIds.length > 0) {
                 const userIdsArray = usersIds.map(userId => new ObjectID(userId));
                 cursor = await User.find({ _id: { $in: userIdsArray } });
             } else {
                 cursor = await User.find();
             }
-    
+
             usersList = cursor.map(user => user.toObject());
             const totalUsers = usersList.length;
-    
+
             return { usersList, totalUsers };
         } catch (error) {
             console.error(`Error: ${error}`);
@@ -280,6 +280,27 @@ export default class UsersDAO {
             return { userList: existingUser.following }
         }
         else {
+            return { error: { message: "No User Found", code: 422 } }
+        }
+    }
+
+    static async updateProfilePicture(id, profilePicture) {
+        let existingUser
+        try {
+            existingUser = await User.findById(id)
+        } catch (e) {
+            console.error("Error fetching User")
+        }
+        if (existingUser) {
+            existingUser.profilePicture = profilePicture
+            try {
+                await existingUser.save()
+                return { message: "success", profilePicture: existingUser.profilePicture }
+            } catch (e) {
+                console.error("Error Saving Profile Picture")
+                return { error: { message: e.message, code: e.code } }
+            }
+        } else {
             return { error: { message: "No User Found", code: 422 } }
         }
     }

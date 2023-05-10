@@ -1,4 +1,5 @@
 import UsersDAO from '../dao/usersDAO.js'
+import bucket from '../googleCloud/bucket.js';
 
 export default class UsersController {
     static async apiCreateUser(req, res, next) {
@@ -105,4 +106,28 @@ export default class UsersController {
             next(error);
         }
     }
+    static async apiUploadProfilePicture(req, res, next) {
+        try {
+            //get the file from the request and upload it to the bucket
+            const file = req.file;
+            const { id } = req.params;
+
+            const blob = bucket.file(req.file.originalname);
+            const blobWriter = blob.createWriteStream();
+            console.log(file)
+            console.log(file.data)
+            blobWriter.on("finish", async () => {
+                // Assembling public URL for accessing the file via HTTP
+                const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+                //updating the user profile picture
+                const result = await UsersDAO.updateProfilePicture(id, publicUrl);
+                res.json(result);
+            });
+            blobWriter.end(req.file.buffer);
+        } catch (error) {
+            console.log(error);
+            next(error);
+        }
+
+    };
 }
