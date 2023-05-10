@@ -14,7 +14,17 @@ router
     .get(userCTRL.apiGetUsers)
     .post(fileupload.single('image') ,userCTRL.apiCreateUser)
 
-router.route('/users/avatar/:id').post(fileupload.single('image'))
+router.route('/users/avatar/:id').post(fileupload.single('image'),(req, res, next) => {
+    try {
+      // process the uploaded file
+      // ...
+  
+      res.status(201).json({ message: 'File uploaded successfully!' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
 
 router.route('/users/login').post(userCTRL.apiLoginUser)
 router.route('/user/:id').get(userCTRL.apiGetUserById)
