@@ -1,6 +1,6 @@
 import { Box, Button, Modal, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import './circle.css'

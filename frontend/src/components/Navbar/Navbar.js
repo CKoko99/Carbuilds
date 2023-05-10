@@ -1,12 +1,11 @@
 
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 
-import classes from "./Navbar.module.css";
-import CBlogo from "./CBlogo.png";
-import ham from './hamic.png'
+
+
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useHttpClient } from "../../hooks/http-hook";
+
 import { authActions } from "../../store/store";
 
 import { styled, alpha } from '@mui/material/styles';
@@ -23,14 +22,8 @@ import { Button } from "@material-ui/core";
 import Link from '@mui/material/Link';
 
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import CreatePostModal from "../Post/CreatePostModal";
+
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -80,84 +73,34 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 function Navbar() {
     const history = useHistory()
-    const [modalOpen, setModalOpen] = useState(false);
+
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const authSelector = useSelector(state => state.auth)
     const authDispatch = useDispatch(authActions)
-    const { isLoading, httpError, sendRequest, clearError } = useHttpClient()
-    const [showAuth, setShowAuth] = useState(<div onClick={closeModalHandler} className={classes["modal-option"]}>
-        <a href="/signup">Sign-up</a>
-    </div>)
+
     function signoutHandler() {
-        setModalOpen(false);
+
         authDispatch(authActions.logout())
     }
-    async function getUserData() {
-        try {
-            const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/user/' + authSelector.userId, "GET", null, {
-                'Content-Type': 'application/json'
-            })
-        } catch (err) {
-        }
-    }
-    useEffect(() => {
-        if (authSelector.isLoggedIn) {
-            getUserData()
 
-            setShowAuth(<div onClick={signoutHandler} className={classes["modal-option"]}>
-                <a href="/">Logout</a>
-            </div>)
-        }
-    }, [authSelector.isLoggedIn])
-    function closeModalHandler() {
-        setModalOpen(false);
-    }
-    function openModalHandler() {
-        setModalOpen(true);
-    }
+   
+
     function goHomeHandler() {
         history.push('/')
     }
     function toggleDrawerHandler(setAs) {
         setIsDrawerOpen(setAs)
     }
-    function signoutHandler() {
-        setIsDrawerOpen(false);
-        authDispatch(authActions.logout())
-    }
-    let modal = <></>;
-    if (modalOpen) {
-        modal = (
-            <>
-                {" "}
-                <div className={classes["modal"]}>
-                    <div className={classes["modal-exit"]} onClick={closeModalHandler}>
-                        X
-                    </div>
-                    <div className={classes["modal-options"]}>
-                        <div onClick={closeModalHandler} className={classes["modal-option"]}>
-                            <a href="/">Home</a>
-                        </div>
-                        <div onClick={closeModalHandler} className={classes["modal-option"]}>
-                            <a href="/topposts">Top Posts</a>
-                        </div>
-                        {authSelector.isLoggedIn && (
+  
+   
+    const [createPost, setCreatePost] = useState(false)
 
-                            <div onClick={closeModalHandler} className={classes["modal-option"]}>
-                                <a href={"/profile/" + authSelector.userId}>My Profile</a>
-                            </div>
-                        )}
-                        <div onClick={closeModalHandler} className={classes["modal-option"]}>
-                            <a href="/vendors">Vendors</a>
-                        </div>
-                        {showAuth}
-                    </div>
-                </div>
-            </>
-        );
-    } else {
-        modal = <></>;
+    function openCreatePostModal() {
+        setCreatePost(true)
+    }
+    function closeCreatePostModal() {
+        setCreatePost(false)
     }
     return (
         <><Box sx={{ flexGrow: 1 }}>
@@ -185,7 +128,6 @@ function Navbar() {
                             }
                         }}
                     >
-
                         <Box sx={{
                             display: "flex",
                             flexDirection: "column",
@@ -254,6 +196,7 @@ function Navbar() {
                         </Box>}
                     {authSelector.isLoggedIn &&
                         <Box sx={{ display: { xs: 'none', sm: 'flex' } }} style={{ margin: "auto 0 auto auto" }}>
+                            <Typography onClick={openCreatePostModal}>Create A Post</Typography>
                             <Link margin={"auto 8px"}
                                 color="inherit" href={"/profile/" + authSelector.userId}>My Profile</Link>
                             <Link onClick={signoutHandler}
@@ -264,6 +207,10 @@ function Navbar() {
                 </Toolbar>
             </AppBar>
         </Box>
+            {createPost && <CreatePostModal
+                close={closeCreatePostModal}
+                open={openCreatePostModal}
+            />}
         </>
     );
 }
