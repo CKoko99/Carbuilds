@@ -168,7 +168,7 @@ function Profile() {
         try {
             const responseData = await sendRequest(`http://localhost:5001/api/v1/carbuilds/user/${paramId}`, "GET", null, {
                 "Content-Type": "application/json"
-            }, true);
+            });
             if (responseData.error) {
                 setErrorFetchingProfile(true);
                 return null;

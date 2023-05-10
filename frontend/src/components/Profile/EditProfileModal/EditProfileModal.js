@@ -5,6 +5,7 @@ import { Avatar } from "@mui/material";
 import { useState } from "react";
 import { useHttpClient } from "../../../hooks/http-hook";
 import { useSelector } from "react-redux";
+import EditAvatarModal from "./EditAvatarModal";
 
 import caravi from '../CBpost.jpeg'
 const useStyles = makeStyles((theme) => ({
@@ -31,7 +32,7 @@ export default function EditProfileModal(props) {
     const [twitter, setTwitter] = useState(props.profileData.twitter)
     const [instagram, setInstagram] = useState(props.profileData.instagram)
     const [youtube, setYoutube] = useState(props.profileData.youtube)
-    const {httpError, sendRequest} = useHttpClient();
+    const { httpError, sendRequest } = useHttpClient();
     const authSelector = useSelector(state => state.auth)
     const handleBioChange = (event) => {
         setBio(event.target.value);
@@ -58,13 +59,18 @@ export default function EditProfileModal(props) {
                 'Content-Type': 'application/json',
                 Authorization: "Bearer " + authSelector.token
             })
-            if(!response.error){
+            if (!response.error) {
                 props.submit();
             }
         } catch (err) {
         }
     }
-    return<> <Modal open={true}
+
+    const [editAvatar, setEditAvatar] = useState(false);
+    const openEditAvatarHandler = () => { setEditAvatar(true) };
+    const closeEditAvatarHandler = () => { setEditAvatar(false) };
+
+    return <> <Modal open={true}
         onClose={closeModalHandler}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
@@ -80,7 +86,7 @@ export default function EditProfileModal(props) {
                 </Grid>
                 <Grid item xs={8}>
                     <Typography>{props.profileData.username}</Typography>
-                    <Typography color="primary">Change Profile Photo</Typography>
+                    <Typography onClick={openEditAvatarHandler} color="primary">Change Profile Photo</Typography>
                 </Grid>
             </Grid>
             <Grid container spacing={2}>
@@ -146,13 +152,16 @@ export default function EditProfileModal(props) {
             </Grid>
             <Box sx={{ display: "flex", justifyContent: "Space-around", mt: "2rem" }}>
 
-                <Button variant="contained" color="error" onClick={closeModalHandler} > Cancel</Button>
+                <Button variant="contained" color="default" onClick={closeModalHandler} > Cancel</Button>
                 <Button variant="contained" color="primary" onClick={submitProfileHandler}> Apply</Button>
             </Box>
         </Box>
-                        
-    </Modal>
-    {httpError && (<div>{httpError}</div>)}
 
+    </Modal>
+        {httpError && (<div>{httpError}</div>)}
+        {editAvatar && <EditAvatarModal
+            close={closeEditAvatarHandler}
+            open={openEditAvatarHandler}
+            profileData={props.profileData} />}
     </>
 }
