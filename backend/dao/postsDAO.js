@@ -14,7 +14,7 @@ let posts
 
 export default class PostsDAO {
 
-    static async createPost(userId, title, description, vehicle) {
+    static async createPost(userId, caption, links) {
         let existingUser
         try {
             existingUser = await User.findById(userId)
@@ -26,77 +26,44 @@ export default class PostsDAO {
             throw new HttpError("Unable to find user for post")
         }
 
-        let existingVehicle
-        const vehicleGiven = (vehicle === "-1" ? false : true)
+
         try {
-            if (vehicleGiven) {
-                existingVehicle = await Vehichle.findById(vehicle)
-            }
+            const post = new Post({
+                title: caption,
+                creator: userId,
+                description: caption,
+                images: links,
+                likes: [],
+                comments: []
+            })
+            await post.save()
+            existingUser.posts.push(post)
+            await existingUser.save()
+            return {message: "Post Created"}
         } catch (e) {
-            console.error(`Unable to find Vehicle: ${e}`)
+            console.error(`Unable to create post: ${e}`)
             return { error: e }
-        }
-        console.log("vehicle given")
-        console.log(vehicleGiven)
-        if (existingVehicle || !vehicleGiven) {
-            try {
-                if (existingVehicle) {
-                    const newPost = new Post({
-                        title,
-                        description,
-                        creator: userId,
-                        vehicle,
-                        likes: [],
-                        comments: []
-                    })
-                    const sess = await mongoose.startSession()
-                    sess.startTransaction()
-                    await newPost.save({ session: sess })
-                    existingUser.posts.push(newPost)
-                    await existingUser.save({ session: sess })
-                    await sess.commitTransaction()
-                    return newPost
-                } else {
-                    const newPost = new Post({
-                        title,
-                        description,
-                        creator: userId,
-                    })
-                    const sess = await mongoose.startSession()
-                    sess.startTransaction()
-                    await newPost.save({ session: sess })
-                    existingUser.posts.push(newPost)
-                    await existingUser.save({ session: sess })
-                    await sess.commitTransaction()
-                    return newPost
-                }
-            }
-            catch (e) {
-                console.error(
-                    `Unable to convert cursor to create post, ${e}`,
-                )
-            }
-        } else {
-            console.log("User Not Found")
         }
 
     }
     static async getPosts() {
         let query
         let cursor
-
+    
         try {
-            cursor = await Post
-                .find()
+            cursor = await Post.find().cursor()
         } catch (e) {
             console.error(`Unable to issue find command, ${e}`)
             return { postsList: [], totalPosts: 0 }
         }
-
+    
+        const postsList = []
+        const totalPosts = await Post.countDocuments(query)
+    
         try {
-            const postsList = await cursor.toArray()
-            const totalPosts = await posts.countDocuments(query)
-            console.log(postsList)
+            await cursor.forEach((post) => {
+                postsList.push(post)
+            })
             return { postsList, totalPosts }
         } catch (e) {
             console.error(
@@ -105,6 +72,7 @@ export default class PostsDAO {
             return { postsList: [], totalPosts: 0 }
         }
     }
+    
     static async getPost(id) {
         let thePost
         try {

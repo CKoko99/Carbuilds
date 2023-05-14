@@ -30,6 +30,10 @@ const PostsSchema = new Schema({
         required: true,
         ref: 'Comment'
     }],
+    images: [{
+        type: String,
+        required: true
+    }]
 })
 
 export default mongoose.model('Post', PostsSchema)

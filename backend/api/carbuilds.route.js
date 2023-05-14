@@ -39,7 +39,7 @@ router.route('/comment/:postId').post(commentCTRL.apiPostComment)
 router.use(checkAuthMiddleWare)
 
 router.route('/post/like/:id').post(postCTRL.apiLikePost)
-router.route('/posts').post(postCTRL.apiCreatePost)
+router.route('/posts/:userId').post(fileupload.array('images', 5), postCTRL.apiCreatePost)
 router.route('/user/update/:id').patch(userCTRL.apiUpdateProfile)
 router.route('/user/:id/follow').post(userCTRL.apiFollowUser).delete(userCTRL.apiUnfollowUser)
 

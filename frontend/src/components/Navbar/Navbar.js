@@ -198,7 +198,7 @@ function Navbar() {
                         </Box>}
                     {authSelector.isLoggedIn &&
                         <Box sx={{ display: { xs: 'none', sm: 'flex' } }} style={{ margin: "auto 0 auto auto" }}>
-                            <Typography onClick={openCreatePostModal}>Create A Post</Typography>
+                            <Typography onClick={()=>{openCreatePostModal()}}>Create A Post</Typography>
                             <Link margin={"auto 8px"}
                                 color="inherit" href={"/profile/" + authSelector.userId}>My Profile</Link>
                             <Link onClick={signoutHandler}
@@ -211,7 +211,6 @@ function Navbar() {
         </Box>
             {createPost && <CreatePostModal
                 close={closeCreatePostModal}
-                open={openCreatePostModal}
             />}
         </>
     );

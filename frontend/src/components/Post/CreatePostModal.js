@@ -4,7 +4,9 @@ import { useState, useRef, useEffect } from "react";
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-
+import imageCompression from 'browser-image-compression';
+import { useHttpClient } from "../../hooks/http-hook";
+import { useSelector } from "react-redux";
 
 
 
@@ -23,7 +25,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CreatePostModal(props) {
+
     const classes = useStyles();
+    const authSelector = useSelector(state => state.auth)
+    const { sendRequest } = useHttpClient()
     function closeModalHandler() {
         props.close()
     }
@@ -77,9 +82,9 @@ export default function CreatePostModal(props) {
     function handleCrop() {
         const newImageUrls = [...croppedImageUrls]
         if (typeof cropperRef.current?.cropper !== "undefined") {
-            if(newImageUrls[imageNumber] === undefined){
+            if (newImageUrls[imageNumber] === undefined) {
                 newImageUrls.push(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
-            }else{
+            } else {
                 newImageUrls[imageNumber] = cropperRef.current?.cropper.getCroppedCanvas().toDataURL();
             }
         }
@@ -136,8 +141,51 @@ export default function CreatePostModal(props) {
             }
         }
     }, [imageNumber, aspectRatio, selectedFiles])
+
+
+    async function handlePostSubmit() {
+        console.log("start")
+        const options = {
+            maxSizeMB: 0.009,
+            useWebWorker: true
+        };
+        try {
+
+            const formData = new FormData();
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const name = `image ${i}`
+                const compressedBlob = await imageCompression(dataURItoBlob(croppedImageUrls[i]), options);
+                const compressedFile = new File([compressedBlob], `${name}.jpg`, { type: compressedBlob.type });
+                formData.append("images", compressedFile)
+            }
+            for (const [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+
+            console.log("start request")
+            const responseData = await sendRequest(
+                "http://localhost:5001/api/v1/carbuilds/posts/" + authSelector.userId,
+                "POST",
+                formData, {
+                Authorization: "Bearer " + authSelector.token
+            });
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    function dataURItoBlob(dataURI) {
+        const byteString = atob(dataURI.split(",")[1]);
+        const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([ab], { type: mimeString });
+    }
     return <>
         <Modal
+            disableEnforceFocus
             open={true}
             onClose={closeModalHandler}
             className={classes.modal}
@@ -178,7 +226,7 @@ export default function CreatePostModal(props) {
                     </Box>*/}
                 </Box>
                 {showImageOrder && (
-                    <DragDropContext onDragEnd={handleOnDragEnd}>
+                    <>  <DragDropContext onDragEnd={handleOnDragEnd}>
                         <Droppable droppableId="images" direction="horizontal">
                             {(provided) => (
                                 <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', overflow: "auto" }}>
@@ -196,6 +244,8 @@ export default function CreatePostModal(props) {
                             )}
                         </Droppable>
                     </DragDropContext>
+                        <button onClick={handlePostSubmit}>Submit Post</button>
+                    </>
                 )}
             </Box>
         </Modal >
