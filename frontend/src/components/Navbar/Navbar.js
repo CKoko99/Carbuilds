@@ -137,6 +137,8 @@ function Navbar() {
                                 <Typography onClick={() => toggleDrawerHandler(false)} sx={{ marginRight: "5px", fontSize: "1.8rem" }}>X</Typography>
                                 <Typography sx={{ marginRight: "5px", fontSize: "1.8rem" }}>RU</Typography>
                             </Box>
+                            <Typography onClick={openCreatePostModal}>Create A Post</Typography>
+
                             {!authSelector.isLoggedIn && <>
                                 <Button
                                     variant="contained"

@@ -56,6 +56,7 @@ export default function CreatePostModal(props) {
         setCropperComponent(
             updatedCropper
         )
+        setShowImagePreviousButton(true)
     }
 
     const [showImageCropper, setShowImageCropper] = useState(false)
@@ -74,14 +75,18 @@ export default function CreatePostModal(props) {
         cropperRef.current.cropper.setAspectRatio(newAspectRatio);
     }
     function handleCrop() {
-        console.log(cropperRef)
         const newImageUrls = [...croppedImageUrls]
         if (typeof cropperRef.current?.cropper !== "undefined") {
-            newImageUrls.push(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
+            if(newImageUrls[imageNumber] === undefined){
+                newImageUrls.push(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
+            }else{
+                newImageUrls[imageNumber] = cropperRef.current?.cropper.getCroppedCanvas().toDataURL();
+            }
         }
         setCroppedImageUrls(newImageUrls);
         setImageNumber(imageNumber + 1)
     }
+
     const [showImageOrder, setShowImageOrder] = useState(false)
     function handleOnDragEnd(result) {
         if (!result.destination) {
@@ -94,12 +99,30 @@ export default function CreatePostModal(props) {
 
         setCroppedImageUrls(items);
     }
+    const [showImagePreviousButton, setShowImagePreviousButton] = useState(false)
+    function goBackOneImage() {
+        if (imageNumber !== 0) {
+            console.log("Image Number After Clicking Back Button")
+            console.log(imageNumber - 1)
+
+            setImageNumber(imageNumber - 1)
+        }
+    }
+    function leaveImageOrder() {
+        setShowImageOrder(false)
+        setShowImageCropper(true)
+        setImageNumber(selectedFiles.length - 1)
+        setShowImagePreviousButton(true)
+        console.log(selectedFiles.length - 1)
+    }
+
 
     useEffect(() => {
         if (imageNumber !== null) {
             if (imageNumber >= selectedFiles.length) {
                 setShowImageCropper(false)
                 setShowImageOrder(true)
+                setShowImagePreviousButton(false)
             } else {
                 const updatedCropper = <Cropper
                     ref={cropperRef}
@@ -112,7 +135,7 @@ export default function CreatePostModal(props) {
                 setCropperComponent(updatedCropper)
             }
         }
-    }, [imageNumber])
+    }, [imageNumber, aspectRatio, selectedFiles])
     return <>
         <Modal
             open={true}
@@ -123,6 +146,8 @@ export default function CreatePostModal(props) {
                 <Typography variant="h6" component="h2" align="center">
                     Create Post
                 </Typography>
+                {showImageOrder && <button onClick={leaveImageOrder}>Leave Image Order</button>}
+                {showImagePreviousButton && <button onClick={goBackOneImage}>Go Back One Image</button>}
                 <Box>
                     {showFileUpload &&
                         <input type="file" accept="image/*" onChange={handleFileChange} multiple />}
@@ -145,7 +170,7 @@ export default function CreatePostModal(props) {
                             <button onClick={handleCrop}>Crop</button>
                         </>
                     }
-                   {/*<Box>
+                    {/*<Box>
                         {croppedImageUrls && croppedImageUrls.map((url, index) => {
 
                             return <img style={{ width: "100px" }} src={url} key={index} />
@@ -156,12 +181,12 @@ export default function CreatePostModal(props) {
                     <DragDropContext onDragEnd={handleOnDragEnd}>
                         <Droppable droppableId="images" direction="horizontal">
                             {(provided) => (
-                                <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex' }}>
+                                <div {...provided.droppableProps} ref={provided.innerRef} style={{ display: 'flex', overflow: "auto" }}>
                                     {croppedImageUrls.map((file, index) => (
                                         <Draggable key={file} draggableId={file} index={index}>
                                             {(provided) => (
                                                 <div {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
-                                                    <img style={{ width: "100px" }} src={file} key={file} />
+                                                    <img alt="alt" style={{ width: "200px", padding: "12px" }} src={file} key={file} />
                                                 </div>
                                             )}
                                         </Draggable>

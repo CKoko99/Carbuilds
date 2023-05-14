@@ -15,6 +15,7 @@ import CreatePost from './components/Post/CreatePost';
 import Postpage from './components/Posts/Postpage';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useHttpClient } from './hooks/http-hook';
 
 const theme = createTheme({
   palette: {
@@ -32,11 +33,43 @@ const theme = createTheme({
 
 function App() {
   const authDispatch = useDispatch(authActions)
+
+
+  const { sendRequest } = useHttpClient()
+  //check if user is logged in and auth token is valid
+
+
+
+
+
+
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('userData'))
-    if (storedUser && storedUser.token) {
-      authDispatch(authActions.login({ token: storedUser.token, userId: storedUser.userId }))
+
+    async function checkAuth(userData) {
+      try {
+        console.log(userData.userId)
+        console.log(userData.token)
+        const response = await sendRequest("http://localhost:5001/api/v1/carbuilds/user/auth/" + userData.userId, 'GET',
+          null, {
+          'Content-Type': 'application/json',
+          Authorization: "Bearer " + userData.token
+        })
+        console.log(response)
+        return response.valid === true
+      } catch (e) {
+        console.log(e)
+        return false
+      }
     }
+    checkAuth(storedUser).then(isValid => {
+        console.log(isValid)
+        if (isValid) {
+          authDispatch(authActions.login({ token: storedUser.token, userId: storedUser.userId }))
+        }
+      }
+    );
+
   }, [])
   return (
     <div className="App">

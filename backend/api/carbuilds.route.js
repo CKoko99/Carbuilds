@@ -3,7 +3,7 @@ import userCTRL from './users.controller.js'
 import postCTRL from './posts.controller.js'
 import commentCTRL from './comment.controller.js'
 import vehicleCTRL from './vehicles.controller.js'
-import checkAuth from '../middleware/check-auth.js'
+import {checkAuthMiddleWare, checkToken} from '../middleware/check-auth.js'
 import fileupload from '../middleware/file-upload.js'
 const router = express.Router()
 
@@ -18,6 +18,8 @@ router.route('/users/avatar/:id').post(fileupload.single('image'), userCTRL.apiU
 
 router.route('/users/login').post(userCTRL.apiLoginUser)
 router.route('/user/:id').get(userCTRL.apiGetUserById)
+router.route('/user/auth/:id').get(checkToken)
+
 
 //route to get users followers
 router.route('/user/:id/followers').get(userCTRL.apiGetUserFollowers)
@@ -34,7 +36,8 @@ router.route('/comment/:commentId').get(commentCTRL.apiGetCommentById)
 router.route('/vehicles/:id').get(vehicleCTRL.apiGetVehiclesByUserId)
 router.route('/vehicles').post(vehicleCTRL.apiCreateVehicle).get(vehicleCTRL.apiGetVehicles)
 router.route('/comment/:postId').post(commentCTRL.apiPostComment)
-router.use(checkAuth)
+router.use(checkAuthMiddleWare)
+
 router.route('/post/like/:id').post(postCTRL.apiLikePost)
 router.route('/posts').post(postCTRL.apiCreatePost)
 router.route('/user/update/:id').patch(userCTRL.apiUpdateProfile)
