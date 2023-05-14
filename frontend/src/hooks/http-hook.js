@@ -1,11 +1,10 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import AuthErrorModal from '../components/Ui/Modals/AuthErrorModal/AuthErrorModal';
 
 class HttpError extends Error {
   constructor(message, errorCode) {
-      super(message);
-      this.code = errorCode;
+    super(message);
+    this.code = errorCode;
   }
 }
 
@@ -13,16 +12,15 @@ class HttpError extends Error {
 export const useHttpClient = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [httpError, setError] = useState(null);
-  const authSelector = useSelector(state => state.auth)
   const activeHttpRequests = useRef([]);
 
   const sendRequest = useCallback(
-    async (url, method = 'GET', body = null, headers = {}, fakeLoad= false) => {
+    async (url, method = 'GET', body = null, headers = {}, fakeLoad = false) => {
       setIsLoading(true);
       setError(null);
       const httpAbortCtrl = new AbortController();
       activeHttpRequests.current.push(httpAbortCtrl);
-      if(fakeLoad){
+      if (fakeLoad) {
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
 
@@ -33,7 +31,7 @@ export const useHttpClient = () => {
           body,
           headers,
           signal: httpAbortCtrl.signal
-        });
+        })
 
 
         const responseData = await response.json();
@@ -41,7 +39,7 @@ export const useHttpClient = () => {
           reqCtrl => reqCtrl !== httpAbortCtrl
         );
         if (!response.ok) {
-            throw new HttpError(responseData.message,response.status);
+          throw new HttpError(responseData.message, response.status);
         }
 
         setIsLoading(false);
@@ -53,15 +51,16 @@ export const useHttpClient = () => {
         console.log(err)
         console.log(err.code)
         console.log(err.message)
-        if(err.code === 401){
-          setError(<AuthErrorModal/>);
-        }else{
+        if (err.code === 401) {
+          setError(<AuthErrorModal />);
+        } else {
           setError(err.message);
         }
         setIsLoading(false);
         throw err;
+
       }
-    }, [authSelector.isLoggedIn]
+    }, []
   );
 
   const clearError = () => {

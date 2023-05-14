@@ -45,11 +45,12 @@ function App() {
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('userData'))
-
+    if(!storedUser.userId || !storedUser.token){
+      return
+    }
     async function checkAuth(userData) {
       try {
-        console.log(userData.userId)
-        console.log(userData.token)
+
         const response = await sendRequest("http://localhost:5001/api/v1/carbuilds/user/auth/" + userData.userId, 'GET',
           null, {
           'Content-Type': 'application/json',
@@ -58,19 +59,19 @@ function App() {
         console.log(response)
         return response.valid === true
       } catch (e) {
-        console.log(e)
         return false
       }
     }
+
     checkAuth(storedUser).then(isValid => {
-        console.log(isValid)
         if (isValid) {
+
           authDispatch(authActions.login({ token: storedUser.token, userId: storedUser.userId }))
         }
       }
     );
-
-  }, [])
+// eslint-disable-next-line 
+  },[])
   return (
     <div className="App">
       <ThemeProvider theme={theme}>

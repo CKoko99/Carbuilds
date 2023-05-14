@@ -56,7 +56,7 @@ export default class UsersDAO {
             })
             let token
             try {
-                token = jwt.sign({ userId: newUser.id, username: newUser.username }, 'supersecret_dont_share', { expiresIn: '1h' })
+                token = jwt.sign({ userId: newUser.id, username: newUser.username }, process.env.JWT_KEY, { expiresIn: '1h' })
                 await newUser.save()
             } catch (e) {
                 console.error(`Unable to create user: ${e}`)
@@ -104,7 +104,7 @@ export default class UsersDAO {
                 if (isValidPassword) {
                     let token
                     try {
-                        token = jwt.sign({ userId: existingUser.id, username: existingUser.username }, 'supersecret_dont_share', { expiresIn: '1h' })
+                        token = jwt.sign({ userId: existingUser.id, username: existingUser.username }, process.env.JWT_KEY, { expiresIn: '1h' })
                     } catch (e) {
                         console.error(`Unable to sign in user: ${e}`)
                         return { error: { message: e.message, code: e.code } }

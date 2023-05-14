@@ -12,7 +12,7 @@ export function checkAuthMiddleWare(req, res, next) {
         if (!token) {
             throw new Error("Authentication Fail")
         }
-        const decodedToken = jwt.verify(token, 'supersecret_dont_share')
+        const decodedToken = jwt.verify(token, process.env.JWT_KEY)
         req.userData = { userId: decodedToken.userId }
         console.log("passed auth")
         return next()
@@ -37,7 +37,7 @@ export function checkToken(req, res, next) {
         if (!token) {
             throw new Error("Authentication Fail")
         }
-        const decodedToken = jwt.verify(token, 'supersecret_dont_share')
+        const decodedToken = jwt.verify(token, process.env.JWT_KEY)
         if (decodedToken.userId !== userId) { // check if decoded token userId matches request parameter userId
             throw new Error("Invalid Token")
         }
@@ -47,7 +47,7 @@ export function checkToken(req, res, next) {
     } catch (e) {
         console.log("auth Error")
         console.log(e.message)
-        return res.status(401).json({ valid: false })
+        return res.status(200).json({ valid: false })
     }
 
 }
