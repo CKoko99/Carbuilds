@@ -92,7 +92,7 @@ export default function FollowListModal(props) {
         }
     }, [modalTab])
 
-    function closeModalHandler(){
+    function closeModalHandler() {
         props.close()
     }
     return <>
@@ -103,7 +103,7 @@ export default function FollowListModal(props) {
             aria-describedby="modal-modal-description"
             className={classes.modal}
         >
-            <Box sx={{bgcolor: "white"}}>
+            <Box sx={{ bgcolor: "white" }}>
                 <Tabs value={modalTab} onChange={handleChange} aria-label="basic tabs example">
                     <Tab value={"Followers"} label="Followers" />
                     <Tab value={"Following"} label="Following" />
@@ -111,17 +111,29 @@ export default function FollowListModal(props) {
                 <TabPanel value={modalTab} index={"Followers"}>
 
                     {isLoading && <Box textAlign={"center"}>
-                        <CircularProgress  />
-                        </Box>
+                        <CircularProgress />
+                    </Box>
                     }
                     {followersList.map((user) => {
-                        return <Box sx={{ display: "flex", alignItems: "center"}}><Avatar style={{marginRight: "1rem", width: "3rem", height: "3rem"}} src={caravi}/><Typography >{user.username}</Typography></Box>
+                        return <Box sx={{ display: "flex", alignItems: "center" }}>
+                            <a href={`/profile/${user._id}`} style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+                                <Avatar style={{ marginRight: "1rem", width: "3rem", height: "3rem" }} src={caravi} />
+                                <Typography>{user.username}</Typography>
+                            </a>
+                        </Box>
+                        //return <Box sx={{ display: "flex", alignItems: "center" }}><Avatar style={{ marginRight: "1rem", width: "3rem", height: "3rem" }} src={caravi} /><Typography >{user.username}</Typography></Box>
                     })}
                 </TabPanel>
                 <TabPanel value={modalTab} index={"Following"}>
                     {isLoading && <Box textAlign={"center"}><CircularProgress /></Box>}
                     {followingList.map((user) => {
-                        return <Box sx={{ display: "flex", alignItems: "center"}}><Avatar style={{marginRight: "1rem", width: "3rem", height: "3rem"}} src={caravi}/><Typography >{user.username}</Typography></Box>
+                        return <Box sx={{ display: "flex", alignItems: "center" }}>
+                            <a href={`/profile/${user._id}`}  style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+                                <Avatar style={{ marginRight: "1rem", width: "3rem", height: "3rem" }} src={caravi} />
+                                <Typography>{user.username}</Typography>
+                            </a>
+                        </Box>
+                        //return <Box sx={{ display: "flex", alignItems: "center"}}><Avatar style={{marginRight: "1rem", width: "3rem", height: "3rem"}} src={caravi}/><Typography >{user.username}</Typography></Box>
                     })}
                 </TabPanel>
             </Box>
