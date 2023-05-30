@@ -7,6 +7,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import imageCompression from 'browser-image-compression';
 import { useHttpClient } from "../../hooks/http-hook";
 import { useSelector } from "react-redux";
+import { TextField, Button } from "@material-ui/core";
 
 
 
@@ -35,6 +36,22 @@ export default function CreatePostModal(props) {
     const cropperRef = useRef();
     const [selectedFiles, setSelectedFiles] = useState(null)
     const [showFileUpload, setShowFileUpload] = useState(true)
+    const [postTitle, setPostTitle] = useState("")
+    const [userInfo, setUserInfo] = useState(null)
+    const [selectedVehicle, setSelectedVehicle] = useState(null)
+    useEffect(() => {
+        //get user info for vehicles
+        console.log("get user info")
+        console.log("request url")
+        console.log(`${process.env.REACT_APP_BACKEND_URL}/user/${authSelector.userId}`)
+        async function getUserInfo() {
+            const responseData = await sendRequest(
+                `${process.env.REACT_APP_BACKEND_URL}/user/${authSelector.userId}`)
+            console.log(responseData)
+            setUserInfo(responseData.user)
+        }
+        getUserInfo()
+    }, [])
     function handleFileChange(event) {
         //read the images and set the state so I can show on the screen use file reader
         const selectedFiles = event.target.files;
@@ -164,7 +181,7 @@ export default function CreatePostModal(props) {
 
             console.log("start request")
             const responseData = await sendRequest(
-                "http://localhost:5001/api/v1/carbuilds/posts/" + authSelector.userId,
+                `${process.env.REACT_APP_BACKEND_URL}/posts/${authSelector.userId}`,
                 "POST",
                 formData, {
                 Authorization: "Bearer " + authSelector.token
@@ -249,6 +266,25 @@ export default function CreatePostModal(props) {
                             )}
                         </Droppable>
                     </DragDropContext>
+                        <Box>
+                            {/*Create a form to add post title  */}
+                            <TextField id="PostTitle"
+                                value={postTitle}
+                                onChange={(e) => setPostTitle(e.target.value)}
+                                label="Enter Post Title"
+                                variant="outlined"
+                            />
+                            <Box>
+                                {/*Create a form to add vehicle to Post  */}
+                                {userInfo && userInfo.vehicles && userInfo.vehicles.map((vehicle, index) => {
+                                    <Button key={index} onClick={() => { setSelectedVehicle(vehicle) }}>{vehicle.make} {vehicle.model} {vehicle.year}</Button>
+                                }
+                                )
+                                }
+                                <Button> Add Vehicle</Button>
+                            </Box>
+                        </Box>
+
                         <button onClick={handlePostSubmit}>Submit Post</button>
                     </>
                 )}
