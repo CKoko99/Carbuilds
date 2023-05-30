@@ -38,17 +38,11 @@ function Profilecard(props) {
     async function retrievePostData() {
         try {
             const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/posts/' + props.postid)
-            console.log("HEra")
             //add test image to response data
-
             responseData.imgs = ["https://i.imgur.com/v7yPDWf.jpg"]
-
-
             //retrieve user name from id in response data
             const userResponse = await sendRequest('http://localhost:5001/api/v1/carbuilds/user/' + responseData.creator)
             responseData.creator = {username: userResponse.username, userId: responseData.creator}
-
-            console.log(responseData)
             setPostData(responseData)
         } catch (e) {
             console.log(e)
@@ -70,8 +64,6 @@ function Profilecard(props) {
             let newPostData = postData
             newPostData.likes = getResponse.likes
             setPostData(newPostData)
-            console.log("this is what we're passing to handle likes")
-            console.log(newPostData.likes)
             handleLikes(newPostData.likes)
         } catch (e) {
             console.log(e)
@@ -84,13 +76,10 @@ function Profilecard(props) {
 
     function handleLikes(likesArray){
         //check if user liked
-        console.log(likesArray)
         if (likesArray.find(user => user === authSelector.userId)) {
             setIsLiked(true)
-            console.log("liked")
         } else {
             setIsLiked(false)
-            console.log("not liked")
         }
         //set likes text
         if(likesArray.length > 1) {

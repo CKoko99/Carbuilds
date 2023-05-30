@@ -123,15 +123,16 @@ export default class UsersDAO {
     static async getUserById(id) {
         let existingUser
         try {
-            existingUser = await User.findById(id)
+            existingUser = await User.findById(id).populate('vehiclesData');
         } catch (e) {
             console.error("Error fetching User")
             return { error: { message: e.message, code: e.code } }
         }
         if (existingUser) {
+            console.log(existingUser)
             return {
                 username: existingUser.username,
-                vehicles: existingUser.vehicles,
+                vehicles: existingUser.vehiclesData,
                 posts: existingUser.posts,
                 about: existingUser.about,
                 instagram: existingUser.instagram,

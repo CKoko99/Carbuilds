@@ -169,6 +169,7 @@ function Profile() {
             const responseData = await sendRequest(`http://localhost:5001/api/v1/carbuilds/user/${paramId}`, "GET", null, {
                 "Content-Type": "application/json"
             });
+            console.log(responseData);
             if (responseData.error) {
                 setErrorFetchingProfile(true);
                 return null;
@@ -179,7 +180,7 @@ function Profile() {
             setErrorFetchingProfile(true);
         }
     }, [paramId, sendRequest, setErrorFetchingProfile]);
-    const  fetchData = useCallback(async()=> {
+    const fetchData = useCallback(async () => {
         const userData = await getUserData();
         console.log("userData");
         console.log(userData);
@@ -187,21 +188,21 @@ function Profile() {
         setProfileDataLoading(false);
         getVehiclesHandler();
         getPostsHandler();
-    },[getUserData, getPostsHandler, getVehiclesHandler])
+    }, [getUserData, getPostsHandler, getVehiclesHandler])
     useEffect(() => {
         fetchData();
     }, [fetchData]);
 
-    const Posts = userPosts.map(post => {
+    const Posts = userPosts.map((post, index) => {
         let matchingCar
         if (post.vehicle) {
             matchingCar = usersVehicles.find(car => car._id === post.vehicle)
         }
         let commentsForPost = postsComments.find(section => section.postId === post._id)
         if (matchingCar) {
-            return <Profilecard reload={getPostsHandler} key={post.id} postid={post._id} comments={commentsForPost} title={post.title} vehicle={matchingCar} username={profileData.username} description={post.description} likes={post.likes} imgs={User.Posts[0].pics} />
+            return <Profilecard key={index} reload={getPostsHandler} postid={post._id} comments={commentsForPost} title={post.title} vehicle={matchingCar} username={profileData.username} description={post.description} likes={post.likes} imgs={User.Posts[0].pics} />
         } else {
-            return <Profilecard reload={getPostsHandler} key={post.id} postid={post._id} comments={commentsForPost} title={post.title} username={profileData.username} description={post.description} likes={post.likes} imgs={User.Posts[0].pics} />
+            return <Profilecard key={index} reload={getPostsHandler} postid={post._id} comments={commentsForPost} title={post.title} username={profileData.username} description={post.description} likes={post.likes} imgs={User.Posts[0].pics} />
         }
     })
 
@@ -233,7 +234,7 @@ function Profile() {
     function closeEditProfileHandler() {
         setEditProfile(false)
     }
-    function reloadUserData(){
+    function reloadUserData() {
         fetchData();
         closeEditProfileHandler();
     }
@@ -293,6 +294,15 @@ function Profile() {
                         {profileData.twitter && profileData.twitter.length > 0 && (<a target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }} href={"https://twitter.com/" + profileData.twitter}><TwitterIcon className={classes.socialIcons} /> </a>)}
                         {profileData.instagram && profileData.instagram.length > 0 && (<a target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }} href={"https://instagram.com/" + profileData.instagram}><InstagramIcon className={classes.socialIcons} /> </a>)}
                         {profileData.youtube && profileData.youtube.length > 0 && (<a target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }} href={"https://youtube.com/" + profileData.youtube}><YouTubeIcon className={classes.socialIcons} /></a>)}
+                    </Box>
+                    <Box>
+                        <Typography variant="h6" sx={{ fontSize: "1rem", }}>Vehicles</Typography>
+                        <Box>
+                            {profileData.vehicles.map((vehicle, index) => {
+                                return <Button key={index}> {`${vehicle.year} ${vehicle.make} ${vehicle.model}`} </Button>
+                            })}
+                            {currentUser &&<Button>Add New Vehicle</Button>}
+                        </Box>
                     </Box>
                 </Box>
             </Box>

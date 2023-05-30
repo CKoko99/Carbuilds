@@ -55,4 +55,11 @@ const UsersSchema = new Schema({
     ,
 })
 
+UsersSchema.virtual('vehiclesData', {
+    ref: 'Vehicle',
+    localField: 'vehicles',
+    foreignField: '_id'
+});
+
+
 export default mongoose.model('User', UsersSchema)
