@@ -111,9 +111,12 @@ export default class UsersController {
             //get the file from the request and upload it to the bucket
             const file = req.file;
             const { id } = req.params;
+            const options = {
+                predefinedAcl: 'publicRead'
+              };
 
             const blob = bucket.file(req.file.originalname);
-            const blobWriter = blob.createWriteStream();
+            const blobWriter = blob.createWriteStream({...options});
             console.log(file)
             console.log(file.data)
             blobWriter.on("finish", async () => {

@@ -169,6 +169,11 @@ export default function CreatePostModal(props) {
                 formData, {
                 Authorization: "Bearer " + authSelector.token
             });
+            console.log("end request")
+            // if response is good then close the modal
+            if (responseData.ok) {
+                props.close()
+            }
         } catch (error) {
             console.log(error)
         }

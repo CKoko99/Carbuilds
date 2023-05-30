@@ -138,7 +138,8 @@ export default class UsersDAO {
                 youtube: existingUser.youtube,
                 twitter: existingUser.twitter,
                 following: existingUser.following,
-                followers: existingUser.followers
+                followers: existingUser.followers,
+                profilePicture: existingUser.profilePicture
             }
         } else {
             return { error: { message: "No User Found", code: 422 } }

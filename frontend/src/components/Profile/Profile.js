@@ -259,7 +259,7 @@ function Profile() {
 
                 <Box sx={{ width: { xs: '90%', sm: '25%' }, margin: { xs: "auto", sm: 0 } }}>
                     <Typography variant="h4" component="h1" gutterBottom> {profileData.username} </Typography>
-                    <Avatar alt="avatar" src={User.avatar} sx={{ width: "14rem !important", height: "14rem !important", display: "block" }} />
+                    <Avatar alt="avatar" src={profileData.profilePicture} sx={{ width: "14rem !important", height: "14rem !important", display: "block" }} />
                 </Box>
                 <Box sx={{ width: { xs: '90%', sm: '50%' }, margin: "10px auto" }}>
                     <Box sx={{ display: "flex", width: "100%", justifyContent: "space-between" }}>

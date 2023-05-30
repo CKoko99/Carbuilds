@@ -1,3 +1,5 @@
+
+import { v4 as uuidv4 } from 'uuid';
 import PostsDAO from '../dao/postsDAO.js'
 import bucket from '../googleCloud/bucket.js';
 
@@ -7,31 +9,43 @@ export default class PostsController {
             const files = req.files;
             const { userId } = req.params;
             const caption = req.body.caption || "TEST CAPTION";
-            console.log(userId)
-            const URLS = [];
+            const options = {
+                predefinedAcl: 'publicRead'
+            };
+            console.log(userId);
+            const URLs = [];
             const promises = [];
+
             for (let i = 0; i < files.length; i++) {
-                const blob = bucket.file(files[i].originalname);
-                const blobWriter = blob.createWriteStream();
+                const file = files[i];
+
+                // Generate a unique file name using UUID
+                const uniqueName = `${uuidv4()}-${file.originalname}`;
+
+                const blob = bucket.file(uniqueName);
+                const blobWriter = blob.createWriteStream({ ...options });
+
                 const promise = new Promise((resolve, reject) => {
                     blobWriter.on("finish", async () => {
-                        // Assembling public URL for accessing the file via HTTP
                         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-                        URLS.push(publicUrl);
+                        URLs.push(publicUrl);
                         resolve();
                     });
                     blobWriter.on("error", reject);
                 });
+
                 promises.push(promise);
-                blobWriter.end(files[i].buffer);
+                blobWriter.end(file.buffer);
             }
+
             await Promise.all(promises);
-            console.log(URLS);
-            const result = await PostsDAO.createPost(userId, caption, URLS);
+            console.log(URLs);
+
+            const result = await PostsDAO.createPost(userId, caption, URLs);
             res.json(result);
         } catch (e) {
-            console.log(e)
-            res.status(500).json({ error: e.message })
+            console.log(e);
+            res.status(500).json({ error: e.message });
         }
     }
     static async apiGetPosts(req, res, next) {

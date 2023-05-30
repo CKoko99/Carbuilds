@@ -27,6 +27,7 @@ function Profilecard(props) {
         likes: [],
         comments: [],
         imgs: [],
+        images: [],
         vehicle: "",
         creator: {username: "", userId: ""},
     })
@@ -118,7 +119,7 @@ function Profilecard(props) {
     }*/
     
     const [activeStep, setActiveStep] = useState(0);
-    const maxSteps = postData.imgs.length;
+    const maxSteps = postData.images.length;
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -181,7 +182,7 @@ function Profilecard(props) {
                     enableMouseEvents
                     containerStyle={{ alignItems: "center" }}
                 >
-                    {postData.imgs.map((step, index) => (
+                    {postData.images.map((step, index) => (
                         <div key={step}>
                             {Math.abs(activeStep - index) <= 2 ? (
                                 <Box
@@ -198,7 +199,7 @@ function Profilecard(props) {
                     ))}
                 </SwipeableViews>
 
-                {postData.imgs.length > 1 &&
+                {postData.images.length > 1 &&
                 <MobileStepper
                     steps={maxSteps}
                     position="static"
