@@ -1,6 +1,6 @@
 import { Box, Modal, Typography } from "@material-ui/core"
 import { makeStyles } from "@material-ui/core/styles";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -50,6 +50,7 @@ export default function CreatePostModal(props) {
             setUserInfo(responseData.user)
         }
         getUserInfo()
+        getVehiclesHandler()
     }, [])
     function handleFileChange(event) {
         //read the images and set the state so I can show on the screen use file reader
@@ -204,6 +205,20 @@ export default function CreatePostModal(props) {
         }
         return new Blob([ab], { type: mimeString });
     }
+    const [usersVehicles, setUsersVehicles] = useState([]);
+    const getVehiclesHandler = useCallback(async () => {
+        try {
+            const responseData = await sendRequest(`${process.env.REACT_APP_BACKEND_URL}/vehicles/${authSelector.userId}`, 'GET', null, {
+                'Content-Type': 'application/json'
+            });
+            console.log(responseData)
+            if (!responseData.error) {
+                setUsersVehicles(responseData.vehiclesList);
+            }
+        } catch (err) {
+            // handle error
+        }
+    }, [sendRequest, authSelector.userId, setUsersVehicles]);
 
     const [openNewVehcielModal, setOpenNewVehcielModal] = useState(false)
 
@@ -216,6 +231,9 @@ export default function CreatePostModal(props) {
     function reloadVehicles() {
         getVehiclesHandler();
         closeNewVehicleModalHandler();
+    }
+    function setSelectedVehicleHandler(vehicle){
+        setSelectedVehicle(vehicle)
     }
     return <>
         <Modal
@@ -288,12 +306,13 @@ export default function CreatePostModal(props) {
                             />
                             <Box>
                                 {/*Create a form to add vehicle to Post  */}
-                                {userInfo && userInfo.vehicles && userInfo.vehicles.map((vehicle, index) => {
-                                    <Button key={index} onClick={() => { setSelectedVehicle(vehicle) }}>{vehicle.make} {vehicle.model} {vehicle.year}</Button>
+                                {usersVehicles.map((vehicle, index) => {
+                                   return <Button color={(selectedVehicle && vehicle._id === selectedVehicle._id) ? "primary" : "secondary"} key={index} onClick={() => { setSelectedVehicleHandler(vehicle) }}>{vehicle.year} {vehicle.make} {vehicle.model}</Button>
                                 }
                                 )
                                 }
-                                <Button> Add Vehicle</Button>
+                                {selectedVehicle && <Button color="secondary" onClick={()=>{setSelectedVehicleHandler(null)}}>Cancel</Button>}
+                                <Button onClick={openNewVehcielModalHandler}> Add Vehicle</Button>
                             </Box>
                         </Box>
 
@@ -305,6 +324,6 @@ export default function CreatePostModal(props) {
         {openNewVehcielModal && <NewVehicleModal
             close={closeNewVehicleModalHandler}
             open={openNewVehcielModal}
-            reloadVehicles={reloadVehicles} />}
+            closeAndRefresh={reloadVehicles} />}
     </>
 }
