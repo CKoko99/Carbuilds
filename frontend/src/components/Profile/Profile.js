@@ -17,6 +17,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import FollowComponent from "./FollowComponent/FollowComponent";
 import FollowListModal from "./FollowListModal/FollowListModal";
 import EditProfileModal from './EditProfileModal/EditProfileModal';
+import NewVehicleModal from '../Ui/Modals/NewVehicleModal';
 const User = {
     username: "Kokokrispy",
     avatar: caravi,
@@ -85,10 +86,9 @@ function Profile() {
 
     const getVehiclesHandler = useCallback(async () => {
         try {
-            const responseData = await sendRequest(`http://localhost:5001/api/v1/carbuilds/vehicles/${paramId}`, 'GET', null, {
+            const responseData = await sendRequest(`${process.env.REACT_APP_BACKEND_URL}/vehicles/${paramId}`, 'GET', null, {
                 'Content-Type': 'application/json'
             });
-
             if (!responseData.error) {
                 setUsersVehicles(responseData.vehiclesList);
             }
@@ -99,7 +99,7 @@ function Profile() {
 
     const getPostsHandler = useCallback(async () => {
         try {
-            const responseData = await sendRequest(`http://localhost:5001/api/v1/carbuilds/posts/user/${paramId}`, 'GET', null, {
+            const responseData = await sendRequest(`${process.env.REACT_APP_BACKEND_URL}/posts/user/${paramId}`, 'GET', null, {
                 'Content-Type': 'application/json'
             });
 
@@ -113,7 +113,7 @@ function Profile() {
 
     const getUserByIdHandler = useCallback(async (userId) => {
         try {
-            const responseData = await sendRequest(`http://localhost:5001/api/v1/carbuilds/user/${userId}`, 'GET', null, {
+            const responseData = await sendRequest(`${process.env.REACT_APP_BACKEND_URL}/user/${userId}`, 'GET', null, {
                 'Content-Type': 'application/json'
             });
 
@@ -125,7 +125,7 @@ function Profile() {
 
     const getCommentsHandler = useCallback(async (postId) => {
         try {
-            const responseData = await sendRequest(`http://localhost:5001/api/v1/carbuilds/comments/${postId}`, 'GET', null, {
+            const responseData = await sendRequest(`${process.env.REACT_APP_BACKEND_URL}/comments/${postId}`, 'GET', null, {
                 'Content-Type': 'application/json'
             });
 
@@ -166,7 +166,7 @@ function Profile() {
 
     const getUserData = useCallback(async () => {
         try {
-            const responseData = await sendRequest(`http://localhost:5001/api/v1/carbuilds/user/${paramId}`, "GET", null, {
+            const responseData = await sendRequest(`${process.env.REACT_APP_BACKEND_URL}/user/${paramId}`, "GET", null, {
                 "Content-Type": "application/json"
             });
             console.log(responseData);
@@ -238,6 +238,19 @@ function Profile() {
         fetchData();
         closeEditProfileHandler();
     }
+
+    const [openNewVehcielModal, setOpenNewVehcielModal] = useState(false)
+
+    function openNewVehcielModalHandler() {
+        setOpenNewVehcielModal(true)
+    }
+    function closeNewVehicleModalHandler() {
+        setOpenNewVehcielModal(false)
+    }
+    function reloadVehicles() {
+        getVehiclesHandler();
+        closeNewVehicleModalHandler();
+    }
     return <>
         {errorFetchingProfile && "No Profile Found"}
         {profileDataLoading && <CircularProgress />}
@@ -257,7 +270,6 @@ function Profile() {
                 width: "85%",
                 display: { xs: "block", sm: "flex" },
             }}>
-
                 <Box sx={{ width: { xs: '90%', sm: '25%' }, margin: { xs: "auto", sm: 0 } }}>
                     <Typography variant="h4" component="h1" gutterBottom> {profileData.username} </Typography>
                     <Avatar alt="avatar" src={profileData.profilePicture} sx={{ width: "14rem !important", height: "14rem !important", display: "block" }} />
@@ -298,13 +310,14 @@ function Profile() {
                     <Box>
                         <Typography variant="h6" sx={{ fontSize: "1rem", }}>Vehicles</Typography>
                         <Box>
-                            {profileData.vehicles.map((vehicle, index) => {
+                            {usersVehicles.map((vehicle, index) => {
                                 return <Button key={index}> {`${vehicle.year} ${vehicle.make} ${vehicle.model}`} </Button>
                             })}
-                            {currentUser &&<Button>Add New Vehicle</Button>}
+                            {currentUser && <Button onClick={openNewVehcielModalHandler} >Add New Vehicle</Button>}
                         </Box>
                     </Box>
                 </Box>
+
             </Box>
             {editProfile && <EditProfileModal
 
@@ -322,16 +335,19 @@ function Profile() {
                 close={closeFollowModalHandler}
                 open={openFollowModal}
             />}
-            <div className={classes['posts']}>
-
-                <div className={classes['posts-title']}>Posts</div>
-                {Posts}
-            </div>
-            <div className={classes['']}></div>
-
+            {openNewVehcielModal && <NewVehicleModal
+                close={closeNewVehicleModalHandler}
+                open={openNewVehcielModal}
+                closeAndRefresh={reloadVehicles}
+            /> }
         </>
         }
+        <div className={classes['posts']}>
 
+            <div className={classes['posts-title']}>Posts</div>
+            {Posts}
+        </div>
+        <div className={classes['']}></div>
     </>
 }
 

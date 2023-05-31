@@ -8,6 +8,7 @@ import imageCompression from 'browser-image-compression';
 import { useHttpClient } from "../../hooks/http-hook";
 import { useSelector } from "react-redux";
 import { TextField, Button } from "@material-ui/core";
+import NewVehicleModal from "../Ui/Modals/NewVehicleModal";
 
 
 
@@ -41,8 +42,6 @@ export default function CreatePostModal(props) {
     const [selectedVehicle, setSelectedVehicle] = useState(null)
     useEffect(() => {
         //get user info for vehicles
-        console.log("get user info")
-        console.log("request url")
         console.log(`${process.env.REACT_APP_BACKEND_URL}/user/${authSelector.userId}`)
         async function getUserInfo() {
             const responseData = await sendRequest(
@@ -205,6 +204,19 @@ export default function CreatePostModal(props) {
         }
         return new Blob([ab], { type: mimeString });
     }
+
+    const [openNewVehcielModal, setOpenNewVehcielModal] = useState(false)
+
+    function openNewVehcielModalHandler() {
+        setOpenNewVehcielModal(true)
+    }
+    function closeNewVehicleModalHandler() {
+        setOpenNewVehcielModal(false)
+    }
+    function reloadVehicles() {
+        getVehiclesHandler();
+        closeNewVehicleModalHandler();
+    }
     return <>
         <Modal
             disableEnforceFocus
@@ -290,6 +302,9 @@ export default function CreatePostModal(props) {
                 )}
             </Box>
         </Modal >
-
+        {openNewVehcielModal && <NewVehicleModal
+            close={closeNewVehicleModalHandler}
+            open={openNewVehcielModal}
+            reloadVehicles={reloadVehicles} />}
     </>
 }
