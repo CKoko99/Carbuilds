@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import moment from 'moment';
 
 const Schema = mongoose.Schema
 
@@ -37,7 +38,11 @@ const PostsSchema = new Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-      },
+    },
 })
+
+PostsSchema.methods.timeAgo = function () {
+    return moment(this.createdAt).fromNow();
+};
 
 export default mongoose.model('Post', PostsSchema)

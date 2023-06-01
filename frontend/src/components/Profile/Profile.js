@@ -202,6 +202,7 @@ function Profile() {
         if (matchingCar) {
             return <Profilecard key={index}
                 reload={getPostsHandler}
+                timeAgo={post.timeAgo}
                 postid={post._id} comments={commentsForPost}
                 title={post.title} vehicle={matchingCar}
                 username={profileData.username} description={post.description}
@@ -209,6 +210,7 @@ function Profile() {
         } else {
             return <Profilecard key={index}
                 reload={getPostsHandler}
+                timeAgo={post.timeAgo}
                 postid={post._id} comments={commentsForPost}
                 title={post.title} username={profileData.username}
                 description={post.description} likes={post.likes}

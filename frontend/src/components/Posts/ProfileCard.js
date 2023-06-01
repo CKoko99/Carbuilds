@@ -38,8 +38,6 @@ function Profilecard(props) {
     async function retrievePostData() {
         try {
             const responseData = await sendRequest('http://localhost:5001/api/v1/carbuilds/posts/' + props.postid)
-            //add test image to response data
-            responseData.imgs = ["https://i.imgur.com/v7yPDWf.jpg"]
             //retrieve user name from id in response data
             const userResponse = await sendRequest('http://localhost:5001/api/v1/carbuilds/user/' + responseData.creator)
             responseData.creator = {username: userResponse.username, userId: responseData.creator}
@@ -251,6 +249,7 @@ function Profilecard(props) {
                     <Button variant="contained" onClick={submitCommentHandler}>Post</Button>
                 </Box>
             </Box>
+            <Typography>{props.timeAgo}</Typography>
         </Box>
        </>
     )

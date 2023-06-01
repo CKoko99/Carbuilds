@@ -40,7 +40,7 @@ export default class PostsDAO {
             await post.save()
             existingUser.posts.push(post)
             await existingUser.save()
-            return {message: "Post Created"}
+            return { message: "Post Created" }
         } catch (e) {
             console.error(`Unable to create post: ${e}`)
             return { error: e }
@@ -50,17 +50,17 @@ export default class PostsDAO {
     static async getPosts() {
         let query
         let cursor
-    
+
         try {
             cursor = await Post.find().cursor()
         } catch (e) {
             console.error(`Unable to issue find command, ${e}`)
             return { postsList: [], totalPosts: 0 }
         }
-    
+
         const postsList = []
         const totalPosts = await Post.countDocuments(query)
-    
+
         try {
             await cursor.forEach((post) => {
                 postsList.push(post)
@@ -73,7 +73,7 @@ export default class PostsDAO {
             return { postsList: [], totalPosts: 0 }
         }
     }
-    
+
     static async getPost(id) {
         let thePost
         try {
@@ -82,23 +82,29 @@ export default class PostsDAO {
             console.error("Error fetching post")
             return { error: e.message }
         }
-        if(!thePost){
+        if (!thePost) {
             console.log("here we are")
             throw new HttpError("Couldn't find Post")
-        }else{
+        } else {
             return thePost
         }
     }
     static async getUserPosts(id) {
-        let userPosts
+        let userPosts;
         try {
             userPosts = await Post.find({ creator: id }).sort({ createdAt: -1 });
         } catch (e) {
-            console.error(`Unable to find Posts: ${e}`)
-            return { error: { message: e.message, code: e.code } }
+            console.error(`Unable to find Posts: ${e}`);
+            return { error: { message: e.message, code: e.code } };
         }
-        const postList = userPosts.map(post => post.toObject())
-        return { postList, totalPosts: postList.length }
+
+        const postList = userPosts.map((post) => {
+            const postObject = post.toObject();
+            postObject.timeAgo = post.timeAgo();
+            return postObject;
+        });
+
+        return { postList, totalPosts: postList.length };
     }
     static async likePost(post, userId) {
         let thePost
