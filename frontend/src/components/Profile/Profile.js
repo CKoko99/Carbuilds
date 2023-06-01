@@ -18,6 +18,10 @@ import FollowComponent from "./FollowComponent/FollowComponent";
 import FollowListModal from "./FollowListModal/FollowListModal";
 import EditProfileModal from './EditProfileModal/EditProfileModal';
 import NewVehicleModal from '../Ui/Modals/NewVehicleModal';
+import DeleteVehicleModal from '../Ui/Modals/DeleteVehicleModal';
+
+import ClearIcon from '@mui/icons-material/Clear';
+
 const User = {
     username: "Kokokrispy",
     avatar: caravi,
@@ -263,6 +267,20 @@ function Profile() {
         getVehiclesHandler();
         closeNewVehicleModalHandler();
     }
+    const [deleteVehicleModal, setDeleteVehicleModal] = useState(false)
+    const [vehicleToDelete, setVehicleToDelete] = useState(null)
+    
+    function openDeleteVehicleModalHandler(vehicle) {
+        setVehicleToDelete(vehicle)
+        setDeleteVehicleModal(true)
+    }
+    function closeDeleteVehicleModalHandler() {
+        setDeleteVehicleModal(false)
+    }
+    function closeAndRefreshDeletedVehicleHandler() {
+        closeDeleteVehicleModalHandler()
+        getVehiclesHandler()
+    }
     return <>
         {errorFetchingProfile && "No Profile Found"}
         {profileDataLoading && <CircularProgress />}
@@ -323,7 +341,9 @@ function Profile() {
                         <Typography variant="h6" sx={{ fontSize: "1rem", }}>Vehicles</Typography>
                         <Box>
                             {usersVehicles.map((vehicle, index) => {
-                                return <Button key={index}> {`${vehicle.year} ${vehicle.make} ${vehicle.model}`} </Button>
+                                return <Button key={index}> {`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+                                    <ClearIcon onClick={() => { openDeleteVehicleModalHandler(vehicle) }} style={{ cursor: 'pointer' }} />
+                                </Button>
                             })}
                             {currentUser && <Button onClick={openNewVehcielModalHandler} >Add New Vehicle</Button>}
                         </Box>
@@ -351,6 +371,12 @@ function Profile() {
                 close={closeNewVehicleModalHandler}
                 open={openNewVehcielModal}
                 closeAndRefresh={reloadVehicles}
+            />}
+            {deleteVehicleModal && <DeleteVehicleModal
+                close={closeDeleteVehicleModalHandler}
+                open={deleteVehicleModal}
+                vehicle={vehicleToDelete}
+                closeAndRefresh={closeAndRefreshDeletedVehicleHandler}
             />}
         </>
         }
