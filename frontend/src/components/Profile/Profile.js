@@ -102,7 +102,7 @@ function Profile() {
             const responseData = await sendRequest(`${process.env.REACT_APP_BACKEND_URL}/posts/user/${paramId}`, 'GET', null, {
                 'Content-Type': 'application/json'
             });
-
+            console.log(responseData);
             if (!responseData.error) {
                 setUserPosts(responseData.postList);
             }
@@ -200,9 +200,19 @@ function Profile() {
         }
         let commentsForPost = postsComments.find(section => section.postId === post._id)
         if (matchingCar) {
-            return <Profilecard key={index} reload={getPostsHandler} postid={post._id} comments={commentsForPost} title={post.title} vehicle={matchingCar} username={profileData.username} description={post.description} likes={post.likes} imgs={User.Posts[0].pics} />
+            return <Profilecard key={index}
+                reload={getPostsHandler}
+                postid={post._id} comments={commentsForPost}
+                title={post.title} vehicle={matchingCar}
+                username={profileData.username} description={post.description}
+                likes={post.likes} imgs={User.Posts[0].pics} />
         } else {
-            return <Profilecard key={index} reload={getPostsHandler} postid={post._id} comments={commentsForPost} title={post.title} username={profileData.username} description={post.description} likes={post.likes} imgs={User.Posts[0].pics} />
+            return <Profilecard key={index}
+                reload={getPostsHandler}
+                postid={post._id} comments={commentsForPost}
+                title={post.title} username={profileData.username}
+                description={post.description} likes={post.likes}
+                imgs={User.Posts[0].pics} />
         }
     })
 
@@ -339,7 +349,7 @@ function Profile() {
                 close={closeNewVehicleModalHandler}
                 open={openNewVehcielModal}
                 closeAndRefresh={reloadVehicles}
-            /> }
+            />}
         </>
         }
         <div className={classes['posts']}>

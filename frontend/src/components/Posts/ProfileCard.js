@@ -237,7 +237,7 @@ function Profilecard(props) {
                  } <Typography style={{ marginLeft: "0.5em" }} variant="subtitle1" component="span">{likesText}</Typography>
                     
                 </Box>
-                {postData.vehicle && (<div className={classes['vehicle']}><Vehicle year={postData.vehicle.year} model={postData.vehicle.model} make={postData.vehicle.make} /></div>)}
+                {postData.vehicle && (<div className={classes['vehicle']}><Vehicle year={props.vehicle.year} model={props.vehicle.model} make={props.vehicle.make} /></div>)}
             </Box>
             <Box sx={{
                 display: "flex",

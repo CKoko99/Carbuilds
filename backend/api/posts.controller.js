@@ -12,6 +12,7 @@ export default class PostsController {
             const options = {
                 predefinedAcl: 'publicRead'
             };
+            const vehicleId = req.body.vehicleId || null;
             console.log(userId);
             const URLs = [];
             const promises = [];
@@ -41,7 +42,7 @@ export default class PostsController {
             await Promise.all(promises);
             console.log(URLs);
 
-            const result = await PostsDAO.createPost(userId, caption, URLs);
+            const result = await PostsDAO.createPost(userId, caption, URLs, vehicleId);
             res.json(result);
         } catch (e) {
             console.log(e);

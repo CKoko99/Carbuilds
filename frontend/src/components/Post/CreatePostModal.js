@@ -163,7 +163,7 @@ export default function CreatePostModal(props) {
     async function handlePostSubmit() {
         console.log("start")
         const options = {
-            maxSizeMB: 0.009,
+            maxSizeMB: 1,
             useWebWorker: true
         };
         try {
@@ -178,7 +178,8 @@ export default function CreatePostModal(props) {
             for (const [key, value] of formData.entries()) {
                 console.log(`${key}: ${value}`);
             }
-
+            formData.append("caption", postTitle)
+            formData.append("vehicleId", selectedVehicle._id || null)
             console.log("start request")
             const responseData = await sendRequest(
                 `${process.env.REACT_APP_BACKEND_URL}/posts/${authSelector.userId}`,
@@ -188,9 +189,7 @@ export default function CreatePostModal(props) {
             });
             console.log("end request")
             // if response is good then close the modal
-            if (responseData.ok) {
-                props.close()
-            }
+            closeModalHandler()
         } catch (error) {
             console.log(error)
         }

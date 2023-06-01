@@ -33,7 +33,11 @@ const PostsSchema = new Schema({
     images: [{
         type: String,
         required: true
-    }]
+    }],
+    createdAt: {
+        type: Date,
+        default: Date.now,
+      },
 })
 
 export default mongoose.model('Post', PostsSchema)

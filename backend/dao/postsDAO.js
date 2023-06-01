@@ -14,7 +14,7 @@ let posts
 
 export default class PostsDAO {
 
-    static async createPost(userId, caption, links) {
+    static async createPost(userId, caption, links, vehicleId) {
         let existingUser
         try {
             existingUser = await User.findById(userId)
@@ -34,7 +34,8 @@ export default class PostsDAO {
                 description: caption,
                 images: links,
                 likes: [],
-                comments: []
+                comments: [],
+                vehicle: vehicleId ? vehicleId : null
             })
             await post.save()
             existingUser.posts.push(post)
@@ -91,7 +92,7 @@ export default class PostsDAO {
     static async getUserPosts(id) {
         let userPosts
         try {
-            userPosts = await Post.find({ creator: id })
+            userPosts = await Post.find({ creator: id }).sort({ createdAt: -1 });
         } catch (e) {
             console.error(`Unable to find Posts: ${e}`)
             return { error: { message: e.message, code: e.code } }
